@@ -232,15 +232,27 @@ var DB = {
   save: function () {
     try { localStorage.setItem('theertha_db', JSON.stringify(this.d)); } catch (e) { console.warn('DB save:', e); }
   },
-  seed: function (force) {
-    if (!force && this.d.employees.length > 0) return;
+ seed: function (force) {
+    // Only seed when force=true (called from "Restore Demo" button)
+    // Never auto-seed on page load
+    if (!force) return;
+
+    // Reset all data except company
+    this.d.sites = [];
+    this.d.employees = [];
+    this.d.attendance = {};
+    this.d.expenses = [];
+    this.d.salaryPayments = [];
+    this.d.advances = [];
+    this.d.counters = { emp: 0, exp: 0, sal: 0, adv: 0, site: 0 };
+
+    // === DEMO DATA (only added when "Restore Demo" is clicked) ===
     this.d.sites = [
       { id: ++this.d.counters.site, name: 'Head Office', type: 'office', active: true },
       { id: ++this.d.counters.site, name: 'Site A - Thiruvananthapuram', type: 'site', active: true },
       { id: ++this.d.counters.site, name: 'Site B - Kochi', type: 'site', active: true },
       { id: ++this.d.counters.site, name: 'Site C - Thrissur', type: 'site', active: true }
     ];
-    var sids = [1, 2, 3, 4];
     this.d.employees = [
       { id: ++this.d.counters.emp, name: 'Rajesh Kumar', designation: 'Site Engineer', phone: '9876543201', joinDate: '2023-06-15', salaryType: 'weekly', weeklySalary: 5500, dailyWage: 0, active: true },
       { id: ++this.d.counters.emp, name: 'Suresh Babu', designation: 'Machine Operator', phone: '9876543202', joinDate: '2023-08-01', salaryType: 'daily', weeklySalary: 0, dailyWage: 850, active: true },
@@ -252,20 +264,27 @@ var DB = {
       { id: ++this.d.counters.emp, name: 'Karthik Iyer', designation: 'Draughtsman', phone: '9876543208', joinDate: '2023-07-20', salaryType: 'weekly', weeklySalary: 5000, dailyWage: 0, active: true }
     ];
     var seedExp = [
-      ['materials', 'Cement - 50 bags (UltraTech)', 27500, sids[1]], ['materials', 'Steel rebar - 2 tons', 96000, sids[1]],
-      ['transport', 'Diesel for JCB & mixer', 8500, sids[1]], ['transport', 'Vehicle maintenance', 4200, sids[0]],
-      ['office', 'Stationery & printing', 1850, sids[0]], ['utilities', 'Electricity bill', 12400, sids[1]],
-      ['equipment', 'Drill machine purchase', 3500, sids[2]], ['maintenance', 'Welding consumables', 2800, sids[1]],
-      ['food', 'Staff refreshments', 3200, sids[1]], ['labor', 'Extra labour loading', 6000, sids[2]],
-      ['materials', 'Sand - 3 brass', 15600, sids[2]], ['materials', 'Bricks - 5000 nos', 18000, sids[3]],
-      ['equipment', 'Scaffolding rental', 5500, sids[3]], ['utilities', 'Water tanker', 3000, sids[2]],
-      ['office', 'CAD software license', 8000, sids[0]], ['maintenance', 'Generator servicing', 4500, sids[3]]
+      ['materials', 'Cement - 50 bags', 27500, 2], ['materials', 'Steel rebar - 2 tons', 96000, 2],
+      ['transport', 'Diesel for JCB & mixer', 8500, 2], ['transport', 'Vehicle maintenance', 4200, 1],
+      ['office', 'Stationery & printing', 1850, 1], ['utilities', 'Electricity bill', 12400, 2],
+      ['equipment', 'Drill machine purchase', 3500, 3], ['maintenance', 'Welding consumables', 2800, 2],
+      ['food', 'Staff refreshments', 3200, 2], ['labor', 'Extra labour loading', 6000, 3],
+      ['materials', 'Sand - 3 brass', 15600, 3], ['materials', 'Bricks - 5000 nos', 18000, 4],
+      ['equipment', 'Scaffolding rental', 5500, 4], ['utilities', 'Water tanker', 3000, 3],
+      ['office', 'CAD software license', 8000, 1], ['maintenance', 'Generator servicing', 4500, 4]
     ];
     var methods = ['cash', 'upi', 'bank', 'cheque'];
     var payers = ['Meera Nair', 'Rajesh Kumar', 'Anand Pillai'];
     for (var i = 0; i < seedExp.length; i++) {
       var dt = new Date(); dt.setDate(dt.getDate() - (15 - i));
-      this.d.expenses.push({ id: ++this.d.counters.exp, date: dt.toISOString().split('T')[0], category: seedExp[i][0], description: seedExp[i][1], amount: seedExp[i][2], siteId: seedExp[i][3], paymentMethod: methods[i % 4], paidBy: payers[i % 3], receiptNo: 'RCP-' + String(i + 1).padStart(4, '0') });
+      this.d.expenses.push({
+        id: ++this.d.counters.exp,
+        date: dt.toISOString().split('T')[0],
+        category: seedExp[i][0], description: seedExp[i][1],
+        amount: seedExp[i][2], siteId: seedExp[i][3],
+        paymentMethod: methods[i % 4], paidBy: payers[i % 3],
+        receiptNo: 'RCP-' + String(i + 1).padStart(4, '0')
+      });
     }
     for (var j = 0; j < 5; j++) {
       var ad = new Date(); ad.setDate(ad.getDate() - (4 - j));
@@ -278,7 +297,12 @@ var DB = {
       }
       this.d.attendance[ds] = att;
     }
-    this.d.advances.push({ id: ++this.d.counters.adv, employeeId: 2, date: U.today(), amount: 1500, reason: 'Medical emergency', paidBy: 'Meera Nair', deductedAmount: 0, status: 'pending', salaryPaymentId: null });
+    this.d.advances.push({
+      id: ++this.d.counters.adv, employeeId: 2,
+      date: U.today(), amount: 1500,
+      reason: 'Medical emergency', paidBy: 'Meera Nair',
+      deductedAmount: 0, status: 'pending', salaryPaymentId: null
+    });
     this.save();
   }
 };
@@ -391,7 +415,7 @@ function siteBadge(siteId) {
 var App = {
   view: 'dashboard',
   init: function () {
-    DB.load(); DB.seed();
+    DB.load(); // DB.seed() REMOVED — no auto dummy data
     document.getElementById('headerDate').textContent = U.fmtDateLong(U.today());
     updateSidebarCompany();
     this.initNav(); this.switch('dashboard'); this.updateAdvBadge();
