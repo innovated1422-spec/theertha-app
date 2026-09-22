@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theertha Engineering – Management Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--primary:#0f2b46;--primary-bright:#2196F3;--accent:#FF9800;--success:#4CAF50;--success-light:#E8F5E9;--danger:#E53935;--danger-light:#FFEBEE;--warning:#FF9800;--warning-light:#FFF3E0;--info:#00BCD4;--info-light:#E0F7FA;--bg:#EDF2F7;--card:#fff;--text:#1a202c;--text-light:#718096;--text-lighter:#a0aec0;--border:#E2E8F0;--radius:10px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 14px rgba(0,0,0,.1);--shadow-lg:0 10px 40px rgba(0,0,0,.12);--sidebar-w:252px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#cbd5e0;border-radius:3px}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:linear-gradient(180deg,var(--primary),#162d50);color:#fff;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+.sidebar-header{padding:20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#FF5722);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
+.logo-icon img{width:100%;height:100%;object-fit:contain;border-radius:8px;background:#fff}
+.sidebar-header .logo-text{font-size:14px;font-weight:700;line-height:1.2}
+.sidebar-header .logo-text small{font-size:10px;font-weight:400;opacity:.6;display:block;letter-spacing:.5px}
+.sidebar-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);padding:14px 14px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.65);font-size:13px;font-weight:500;margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(33,150,243,.2);color:#fff}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-item i{width:20px;text-align:center;font-size:15px}
+.badge-count{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
+.sidebar-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.35)}
+.main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+.header{background:var(--card);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.header-left{display:flex;align-items:center;gap:16px}
+.header-left h2{font-size:18px;font-weight:700;color:var(--primary)}
+.header-right{display:flex;align-items:center;gap:12px}
+.date-display{font-size:12px;color:var(--text-light);display:flex;align-items:center;gap:6px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--text);cursor:pointer}
+.content{flex:1;padding:24px 28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--primary-bright);color:#fff}.btn-primary:hover{background:#1976D2}
+.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#388E3C}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#C62828}
+.btn-warning{background:var(--accent);color:#fff}.btn-warning:hover{background:#F57C00}
+.btn-info{background:var(--info);color:#fff}.btn-info:hover{background:#0097A7}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text-light)}
+.btn-outline:hover{border-color:var(--primary-bright);color:var(--primary-bright);background:rgba(33,150,243,.05)}
+.btn-sm{padding:6px 12px;font-size:12px}.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.card-header h3{font-size:15px;font-weight:700;color:var(--primary)}
+.card-body{padding:20px}.card-body.no-pad{padding:0}
+.card-footer{padding:14px 20px;border-top:1px solid var(--border);background:#f8fafc}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.stat-info{flex:1}.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);font-weight:600;margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:800;color:var(--text)}.stat-change{font-size:11px;margin-top:4px;font-weight:500}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+table th{background:#f7fafc;padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);font-weight:700;border-bottom:2px solid var(--border);white-space:nowrap}
+table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+table tbody tr:hover{background:#f7fafc}
+.text-right{text-align:right}.text-center{text-align:center}.actions-cell{white-space:nowrap}
+.table-empty{padding:40px 20px;text-align:center;color:var(--text-lighter)}
+.table-empty i{font-size:40px;margin-bottom:12px;display:block;opacity:.3}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:12px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{padding:10px 14px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;transition:border-color .2s;background:#fff}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary-bright);box-shadow:0 0 0 3px rgba(33,150,243,.1)}
+.form-group textarea{resize:vertical;min-height:70px}
+.form-full{grid-column:1/-1}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-success{background:var(--success-light);color:#2E7D32}
+.badge-danger{background:var(--danger-light);color:#C62828}
+.badge-warning{background:var(--warning-light);color:#E65100}
+.badge-info{background:var(--info-light);color:#00838F}
+.badge-neutral{background:#f1f5f9;color:var(--text-light)}
+.badge-primary{background:rgba(33,150,243,.1);color:#1565C0}
+.badge-site{background:rgba(0,188,212,.1);color:#00838F}
+.badge-office{background:rgba(255,152,0,.1);color:#E65100}
+.att-buttons{display:flex;gap:3px;flex-wrap:wrap}
+.att-btn{padding:5px 10px;border:2px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;transition:all .15s;color:var(--text-light)}
+.att-btn:hover{border-color:var(--text-lighter)}
+.att-btn.active-present{background:var(--success);border-color:var(--success);color:#fff}
+.att-btn.active-absent{background:var(--danger);border-color:var(--danger);color:#fff}
+.att-btn.active-half-day{background:var(--warning);border-color:var(--warning);color:#fff}
+.att-btn.active-paid-leave{background:var(--info);border-color:var(--info);color:#fff}
+.att-btn.active-weekly-off{background:#9E9E9E;border-color:#9E9E9E;color:#fff}
+.filter-bar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--border);background:#f8fafc}
+.filter-bar .form-group{min-width:130px}
+.filter-bar .form-group input,.filter-bar .form-group select{padding:8px 12px;font-size:12px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(3px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:14px;box-shadow:var(--shadow-lg);width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;animation:modalIn .25s ease}
+.modal-lg{max-width:800px}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:16px;font-weight:700;color:var(--primary)}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-lighter);padding:4px;border-radius:6px}
+.modal-close:hover{background:#f1f5f9;color:var(--text)}
+.modal-body{padding:22px;overflow-y:auto;flex:1}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:#f8fafc;border-radius:0 0 14px 14px}
+.toast-container{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:8px;color:#fff;font-size:13px;font-weight:600;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:10px;min-width:280px;animation:toastIn .3s ease}
+.toast.success{background:var(--success)}.toast.error{background:var(--danger)}.toast.warning{background:var(--warning)}.toast.info{background:var(--info)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.toast.removing{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+.wed-alert{background:linear-gradient(135deg,#FF9800,#FF5722);color:#fff;padding:12px 20px;border-radius:var(--radius);margin-bottom:20px;display:flex;align-items:center;gap:12px;font-weight:600}
+.wed-alert i{font-size:24px}
+.not-wed{background:#f1f5f9;color:var(--text-light);padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px}
+.week-nav{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:#f8fafc;flex-wrap:wrap}
+.week-nav .week-label{font-size:15px;font-weight:700;color:var(--primary);min-width:250px}
+.week-nav input[type=date]{padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px}
+.report-tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:20px;padding:0 4px;overflow-x:auto}
+.report-tab{padding:10px 18px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-light);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.report-tab:hover{color:var(--text)}.report-tab.active{color:var(--primary-bright);border-color:var(--primary-bright)}
+.report-chart{display:flex;align-items:end;gap:8px;height:120px;padding:10px 0}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;background:var(--primary-bright);min-height:4px;transition:height .5s ease}
+.chart-label{font-size:10px;color:var(--text-light);font-weight:600}.chart-value{font-size:10px;font-weight:700;color:var(--text)}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.quick-action{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .2s}
+.quick-action:hover{border-color:var(--primary-bright);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.quick-action i{font-size:24px;color:var(--primary-bright)}.quick-action span{font-size:12px;font-weight:600;color:var(--text)}
+.summary-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.summary-box{flex:1;min-width:140px;padding:16px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);text-align:center}
+.summary-box .sum-val{font-size:22px;font-weight:800;color:var(--primary)}.summary-box .sum-label{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.company-logo-area{display:flex;gap:24px;align-items:flex-start;padding:24px;background:#f8fafc;border-radius:12px;border:1px solid var(--border);margin-bottom:20px}
+.logo-preview-box{width:140px;height:140px;border:3px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;flex-shrink:0;position:relative}
+.logo-preview-box img{max-width:100%;max-height:100%;object-fit:contain}
+.logo-preview-box .default-icon{font-size:48px;color:var(--text-lighter)}
+.logo-preview-box .logo-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;font-size:9px;text-align:center;padding:3px;border-radius:0 0 12px 12px}
+.logo-controls{display:flex;flex-direction:column;gap:10px;flex:1}.logo-btns{display:flex;gap:8px;flex-wrap:wrap}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.data-action-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.data-action-card{padding:24px;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);text-align:center;cursor:pointer;transition:all .2s}
+.data-action-card:hover{border-color:var(--primary-bright);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.data-action-card i{font-size:36px;margin-bottom:12px;display:block}.data-action-card h4{font-size:14px;font-weight:700;margin-bottom:4px}.data-action-card p{font-size:11px;color:var(--text-light)}
+.danger-zone{padding:24px;background:var(--danger-light);border:2px solid #ffcdd2;border-radius:var(--radius)}
+.danger-zone h4{color:var(--danger);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.danger-zone .btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.import-preview{background:#f8fafc;padding:16px;border-radius:8px;margin-top:12px;font-size:12px;line-height:1.8}
+.site-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-toggle{display:block}.settings-grid{grid-template-columns:1fr}.company-logo-area{flex-direction:column;align-items:center}.content{padding:16px}}
+@media(max-width:600px){.header{padding:0 16px;height:56px}.date-display{display:none}.stats-grid{grid-template-columns:1fr 1fr}.stat-card{padding:14px}.stat-value{font-size:18px}}
+.overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+@media(max-width:900px){.sidebar.open+.overlay-bg{display:block}}
+@media print{.sidebar,.header,.no-print{display:none!important}.main{margin:0}.content{padding:0}}
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon" id="sidebarLogo"><i class="fas fa-hard-hat"></i></div>
+    <div class="logo-text" id="sidebarName">Theertha<small id="sidebarTagline">Engineering</small></div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-view="dashboard"><i class="fas fa-th-large"></i> Dashboard</div>
+    <div class="nav-section">Management</div>
+    <div class="nav-item" data-view="employees"><i class="fas fa-users"></i> Employees</div>
+    <div class="nav-item" data-view="attendance"><i class="fas fa-calendar-check"></i> Attendance</div>
+    <div class="nav-section">Finance</div>
+    <div class="nav-item" data-view="expenses"><i class="fas fa-receipt"></i> Expenses</div>
+    <div class="nav-item" data-view="salary"><i class="fas fa-money-bill-wave"></i> Salary & Wages</div>
+    <div class="nav-item" data-view="advances"><i class="fas fa-hand-holding-dollar"></i> Advances <span class="badge-count" id="advanceBadge" style="display:none"></span></div>
+    <div class="nav-section">Analytics</div>
+    <div class="nav-item" data-view="reports"><i class="fas fa-chart-bar"></i> Reports</div>
+    <div class="nav-section">Settings</div>
+    <div class="nav-item" data-view="settings"><i class="fas fa-gear"></i> Company Settings</div>
+    <div class="nav-item" data-view="sites"><i class="fas fa-map-marker-alt"></i> Sites & Locations</div>
+    <div class="nav-item" id="exportExcelNav"><i class="fas fa-file-excel"></i> Export to Excel</div>
+    <div class="nav-item" id="exportJsonNav"><i class="fas fa-database"></i> Export JSON</div>
+    <div class="nav-item" id="resetNav"><i class="fas fa-rotate-left"></i> Reset Demo</div>
+  </nav>
+  <div class="sidebar-footer" id="sidebarFooter"></div>
+</aside>
+<div class="overlay-bg" id="overlayBg"></div>
+<div class="main">
+  <header class="header">
+    <div class="header-left">
+      <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+      <h2 id="pageTitle">Dashboard</h2>
+    </div>
+    <div class="header-right"><div class="date-display"><i class="far fa-calendar-alt"></i> <span id="headerDate"></span></div></div>
+  </header>
+  <div class="content" id="content"></div>
+</div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header"><h3 id="modalTitle"></h3><button class="modal-close" onclick="UIC.closeModal()">&times;</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ================================================================
+   THEERTHA ENGINEERING - MANAGEMENT SUITE v4 (ALL ERRORS FIXED)
+   Expense | Attendance | Salary | Advances | Sites | Excel Export
+   ================================================================ */
+
+// ==================== DATA STORE ====================
+var DB = {
+  d: {
+    company: { name: 'Theertha Engineering', tagline: 'Building Tomorrow Today', address: '123 Industrial Estate, Kochi, Kerala', phone: '+91 98765 43210', email: 'info@theerthaengineering.com', gst: '32AABCT1234M1Z5', website: 'www.theerthaengineering.com', logo: '' },
+    sites: [],
+    employees: [],
+    attendance: {},
+    expenses: [],
+    salaryPayments: [],
+    advances: [],
+    counters: { emp: 0, exp: 0, sal: 0, adv: 0, site: 0 }
+  },
+  load: function () {
+    try {
+      var s = localStorage.getItem('theertha_db');
+      if (s) {
+        var d = JSON.parse(s);
+        for (var k in d) this.d[k] = d[k];
+        if (!this.d.company) this.d.company = { name: 'Theertha Engineering', tagline: '', address: '', phone: '', email: '', gst: '', website: '', logo: '' };
+        if (!this.d.sites) this.d.sites = [];
+        if (!this.d.counters) this.d.counters = { emp: 0, exp: 0, sal: 0, adv: 0, site: 0 };
+        if (!this.d.counters.site) this.d.counters.site = 0;
+      }
+    } catch (e) { console.warn('DB load:', e); }
+  },
+  save: function () {
+    try { localStorage.setItem('theertha_db', JSON.stringify(this.d)); } catch (e) { console.warn('DB save:', e); }
+  },
+  seed: function (force) {
+    if (!force && this.d.employees.length > 0) return;
+    this.d.sites = [
+      { id: ++this.d.counters.site, name: 'Head Office', type: 'office', active: true },
+      { id: ++this.d.counters.site, name: 'Site A - Thiruvananthapuram', type: 'site', active: true },
+      { id: ++this.d.counters.site, name: 'Site B - Kochi', type: 'site', active: true },
+      { id: ++this.d.counters.site, name: 'Site C - Thrissur', type: 'site', active: true }
+    ];
+    var sids = [1, 2, 3, 4];
+    this.d.employees = [
+      { id: ++this.d.counters.emp, name: 'Rajesh Kumar', designation: 'Site Engineer', phone: '9876543201', joinDate: '2023-06-15', salaryType: 'weekly', weeklySalary: 5500, dailyWage: 0, active: true },
+      { id: ++this.d.counters.emp, name: 'Suresh Babu', designation: 'Machine Operator', phone: '9876543202', joinDate: '2023-08-01', salaryType: 'daily', weeklySalary: 0, dailyWage: 850, active: true },
+      { id: ++this.d.counters.emp, name: 'Anand Pillai', designation: 'Supervisor', phone: '9876543203', joinDate: '2023-03-10', salaryType: 'weekly', weeklySalary: 7000, dailyWage: 0, active: true },
+      { id: ++this.d.counters.emp, name: 'Meera Nair', designation: 'Accountant', phone: '9876543204', joinDate: '2023-01-20', salaryType: 'weekly', weeklySalary: 6000, dailyWage: 0, active: true },
+      { id: ++this.d.counters.emp, name: 'Joseph Thomas', designation: 'Electrician', phone: '9876543205', joinDate: '2023-09-05', salaryType: 'daily', weeklySalary: 0, dailyWage: 800, active: true },
+      { id: ++this.d.counters.emp, name: 'Priya Devi', designation: 'Helper', phone: '9876543206', joinDate: '2024-01-10', salaryType: 'daily', weeklySalary: 0, dailyWage: 550, active: true },
+      { id: ++this.d.counters.emp, name: 'Ravi Shankar', designation: 'Welder', phone: '9876543207', joinDate: '2023-11-15', salaryType: 'daily', weeklySalary: 0, dailyWage: 750, active: true },
+      { id: ++this.d.counters.emp, name: 'Karthik Iyer', designation: 'Draughtsman', phone: '9876543208', joinDate: '2023-07-20', salaryType: 'weekly', weeklySalary: 5000, dailyWage: 0, active: true }
+    ];
+    var seedExp = [
+      ['materials', 'Cement - 50 bags (UltraTech)', 27500, sids[1]], ['materials', 'Steel rebar - 2 tons', 96000, sids[1]],
+      ['transport', 'Diesel for JCB & mixer', 8500, sids[1]], ['transport', 'Vehicle maintenance', 4200, sids[0]],
+      ['office', 'Stationery & printing', 1850, sids[0]], ['utilities', 'Electricity bill', 12400, sids[1]],
+      ['equipment', 'Drill machine purchase', 3500, sids[2]], ['maintenance', 'Welding consumables', 2800, sids[1]],
+      ['food', 'Staff refreshments', 3200, sids[1]], ['labor', 'Extra labour loading', 6000, sids[2]],
+      ['materials', 'Sand - 3 brass', 15600, sids[2]], ['materials', 'Bricks - 5000 nos', 18000, sids[3]],
+      ['equipment', 'Scaffolding rental', 5500, sids[3]], ['utilities', 'Water tanker', 3000, sids[2]],
+      ['office', 'CAD software license', 8000, sids[0]], ['maintenance', 'Generator servicing', 4500, sids[3]]
+    ];
+    var methods = ['cash', 'upi', 'bank', 'cheque'];
+    var payers = ['Meera Nair', 'Rajesh Kumar', 'Anand Pillai'];
+    for (var i = 0; i < seedExp.length; i++) {
+      var dt = new Date(); dt.setDate(dt.getDate() - (15 - i));
+      this.d.expenses.push({ id: ++this.d.counters.exp, date: dt.toISOString().split('T')[0], category: seedExp[i][0], description: seedExp[i][1], amount: seedExp[i][2], siteId: seedExp[i][3], paymentMethod: methods[i % 4], paidBy: payers[i % 3], receiptNo: 'RCP-' + String(i + 1).padStart(4, '0') });
+    }
+    for (var j = 0; j < 5; j++) {
+      var ad = new Date(); ad.setDate(ad.getDate() - (4 - j));
+      var ds = ad.toISOString().split('T')[0];
+      if (ad.getDay() === 0) continue;
+      var att = {};
+      for (var k = 0; k < this.d.employees.length; k++) {
+        var r = Math.random();
+        att[this.d.employees[k].id] = r > 0.15 ? 'present' : r > 0.08 ? 'half-day' : r > 0.03 ? 'absent' : 'paid-leave';
+      }
+      this.d.attendance[ds] = att;
+    }
+    this.d.advances.push({ id: ++this.d.counters.adv, employeeId: 2, date: U.today(), amount: 1500, reason: 'Medical emergency', paidBy: 'Meera Nair', deductedAmount: 0, status: 'pending', salaryPaymentId: null });
+    this.save();
+  }
+};
+
+// ==================== UTILITIES ====================
+var U = {
+  today: function () { return new Date().toISOString().split('T')[0]; },
+  fmtDate: function (s) { if (!s) return ''; return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); },
+  fmtDateLong: function (s) { if (!s) return ''; return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
+  fmtMoney: function (n) { return '\u20B9' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 }); },
+  weekStart: function (d) { var x = new Date(d + 'T00:00:00'); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toISOString().split('T')[0]; },
+  weekEnd: function (d) { var x = new Date(this.weekStart(d) + 'T00:00:00'); x.setDate(x.getDate() + 6); return x.toISOString().split('T')[0]; },
+  addDays: function (d, n) { var x = new Date(d + 'T00:00:00'); x.setDate(x.getDate() + n); return x.toISOString().split('T')[0]; },
+  dayName: function (d) { return new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long' }); },
+  dayNameShort: function (d) { return new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' }); },
+  isWednesday: function (d) { return new Date((d || this.today()) + 'T00:00:00').getDay() === 3; },
+  isSunday: function (d) { return new Date(d + 'T00:00:00').getDay() === 0; },
+  getDay: function (d) { return new Date(d + 'T00:00:00').getDay(); },
+  isWorkday: function (d) { var g = this.getDay(d); return g >= 1 && g <= 6; },
+  daysInWeek: function () { return 6; },
+  months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  catLabel: function (c) { return { materials: 'Materials', transport: 'Transport', office: 'Office', utilities: 'Utilities', equipment: 'Equipment', maintenance: 'Maintenance', food: 'Food', labor: 'Labour', other: 'Other' }[c] || c; },
+  payLabel: function (m) { return { cash: 'Cash', upi: 'UPI', bank: 'Bank Transfer', cheque: 'Cheque', card: 'Card' }[m] || m; },
+  empById: function (id) { return DB.d.employees.find(function (e) { return e.id == id; }); },
+  empName: function (id) { var e = this.empById(id); return e ? e.name : 'Unknown'; },
+  activeEmps: function () { return DB.d.employees.filter(function (e) { return e.active; }); },
+  pendingAdvances: function (pid) { return DB.d.advances.filter(function (a) { return a.employeeId == pid && a.status === 'pending'; }); },
+  totalPendingAdv: function (pid) { return this.pendingAdvances(pid).reduce(function (s, a) { return s + (a.amount - a.deductedAmount); }, 0); },
+  allPendingAdv: function () { return DB.d.advances.filter(function (a) { return a.status === 'pending'; }); },
+  totalAllPendingAdv: function () { return this.allPendingAdv().reduce(function (s, a) { return s + (a.amount - a.deductedAmount); }, 0); },
+  weekRangeStr: function (ws) { return this.fmtDate(ws) + ' \u2013 ' + this.fmtDate(this.weekEnd(ws)); },
+  siteById: function (id) { return DB.d.sites.find(function (s) { return s.id == id; }); },
+  siteName: function (id) { var s = this.siteById(id); return s ? s.name : 'Unknown'; },
+  siteType: function (id) { var s = this.siteById(id); return s ? s.type : 'site'; },
+  allSites: function () { return DB.d.sites.filter(function (s) { return s.active !== false; }); },
+  expenseCountForSite: function (id) { return DB.d.expenses.filter(function (e) { return e.siteId == id; }).length; }
+};
+
+// ==================== UI COMPONENTS ====================
+var UIC = {
+  toast: function (msg, type) {
+    type = type || 'success';
+    var icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = '<i class="fas ' + (icons[type] || icons.success) + '"></i><span>' + msg + '</span>';
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(function () { el.classList.add('removing'); setTimeout(function () { el.remove(); }, 300); }, 3500);
+  },
+  openModal: function (title, body, footer, lg) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = body;
+    document.getElementById('modalFooter').innerHTML = footer || '';
+    document.getElementById('modal').className = 'modal' + (lg ? ' modal-lg' : '');
+    document.getElementById('modalOverlay').classList.add('show');
+  },
+  closeModal: function () { document.getElementById('modalOverlay').classList.remove('show'); },
+  confirm: function (msg) {
+    return new Promise(function (resolve) {
+      UIC.openModal('Confirm Action', '<p style="font-size:15px;line-height:1.6">' + msg + '</p>',
+        '<button class="btn btn-outline" onclick="UIC._cb(false)">Cancel</button>' +
+        '<button class="btn btn-danger" onclick="UIC._cb(true)">Confirm</button>');
+      UIC._cb = function (v) { UIC.closeModal(); resolve(v); };
+    });
+  },
+  confirmDefault: function (msg) {
+    return new Promise(function (resolve) {
+      UIC.openModal('Confirm Action', '<p style="font-size:15px;line-height:1.6">' + msg + '</p>',
+        '<button class="btn btn-outline" onclick="UIC._cb(false)">Cancel</button>' +
+        '<button class="btn btn-primary" onclick="UIC._cb(true)">Confirm</button>');
+      UIC._cb = function (v) { UIC.closeModal(); resolve(v); };
+    });
+  },
+  _cb: function () {}
+};
+document.getElementById('modalOverlay').addEventListener('click', function (e) {
+  if (e.target === e.currentTarget) UIC.closeModal();
+});
+
+// ==================== COMPANY HELPERS ====================
+function getCompany() {
+  return DB.d.company || { name: 'Theertha Engineering', tagline: '', address: '', phone: '', email: '', gst: '', website: '', logo: '' };
+}
+function logoHTML() {
+  var c = getCompany();
+  return c.logo ? '<img src="' + c.logo + '" alt="Logo">' : '<i class="fas fa-hard-hat"></i>';
+}
+function updateSidebarCompany() {
+  var c = getCompany();
+  document.getElementById('sidebarLogo').innerHTML = logoHTML();
+  document.getElementById('sidebarName').innerHTML = (c.name || 'Theertha') + '<small>' + (c.tagline || c.name || 'Engineering') + '</small>';
+  document.getElementById('sidebarFooter').textContent = '\u00A9 ' + new Date().getFullYear() + ' ' + (c.name || 'Theertha Engineering');
+}
+function companyLetterhead() {
+  var c = getCompany();
+  var logo = c.logo ? '<img src="' + c.logo + '" style="height:60px">' : '';
+  return '<div style="display:flex;align-items:center;gap:20px;padding:16px 0;border-bottom:3px solid #0f2b46;margin-bottom:20px">' + logo +
+    '<div><h1 style="font-size:22px;color:#0f2b46;margin-bottom:2px">' + c.name + '</h1>' +
+    '<p style="font-size:11px;color:#718096">' + c.address + ' | ' + c.phone + ' | ' + c.email + '</p></div></div>';
+}
+function siteBadge(siteId) {
+  var s = U.siteById(siteId);
+  if (!s) return '<span class="badge badge-neutral">Unknown</span>';
+  var cls = s.type === 'office' ? 'badge-office' : 'badge-site';
+  var icon = s.type === 'office' ? 'fa-building' : 'fa-map-marker-alt';
+  return '<span class="site-chip ' + cls + '"><i class="fas ' + icon + '" style="font-size:9px"></i> ' + s.name + '</span>';
+}
+
+// ==================== NAVIGATION ====================
+var App = {
+  view: 'dashboard',
+  init: function () {
+    DB.load(); DB.seed();
+    document.getElementById('headerDate').textContent = U.fmtDateLong(U.today());
+    updateSidebarCompany();
+    this.initNav(); this.switch('dashboard'); this.updateAdvBadge();
+  },
+  initNav: function () {
+    document.getElementById('sidebarNav').addEventListener('click', function (e) {
+      var item = e.target.closest('.nav-item');
+      if (!item) return;
+      if (item.id === 'exportExcelNav') { ExcelExporter.export(); return; }
+      if (item.id === 'exportJsonNav') { App.exportJSON(); return; }
+      if (item.id === 'resetNav') { Settings.resetDemo(); return; }
+      if (item.dataset.view) App.switch(item.dataset.view);
+    });
+    document.getElementById('mobileToggle').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+    document.getElementById('overlayBg').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  },
+  switch: function (v) {
+    this.view = v;
+    var navItems = document.querySelectorAll('.nav-item[data-view]');
+    for (var i = 0; i < navItems.length; i++) {
+      navItems[i].classList.toggle('active', navItems[i].dataset.view === v);
+    }
+    document.getElementById('sidebar').classList.remove('open');
+    var titles = { dashboard: 'Dashboard', employees: 'Employee Management', attendance: 'Attendance Tracking', expenses: 'Expense Tracking', salary: 'Salary & Wages', advances: 'Advance Management', reports: 'Reports & Analytics', settings: 'Company Settings', sites: 'Sites & Locations' };
+    document.getElementById('pageTitle').textContent = titles[v] || v;
+    var views = { dashboard: Dashboard, employees: Employees, attendance: Attendance, expenses: Expenses, salary: Salary, advances: Advances, reports: Reports, settings: Settings, sites: Sites };
+    var mod = views[v];
+    if (mod) {
+      document.getElementById('content').innerHTML = mod.render();
+      if (mod.bind) mod.bind();
+    }
+    this.updateAdvBadge();
+  },
+  updateAdvBadge: function () {
+    var n = U.allPendingAdv().length;
+    var b = document.getElementById('advanceBadge');
+    b.textContent = n > 0 ? n : '';
+    b.style.display = n > 0 ? 'inline' : 'none';
+  },
+  exportJSON: function () {
+    var blob = new Blob([JSON.stringify(DB.d, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'theertha_backup_' + U.today() + '.json';
+    a.click();
+    UIC.toast('JSON backup downloaded!');
+  }
+};
+
+// ==================== HELPERS ====================
+function calcWeekTotal(ws) {
+  var total = 0;
+  var emps = U.activeEmps();
+  for (var i = 0; i < emps.length; i++) {
+    var emp = emps[i];
+    var eff = 0;
+    for (var j = 0; j < 7; j++) {
+      var ds = U.addDays(ws, j);
+      if (!U.isWorkday(ds)) continue;
+      var st = (DB.d.attendance[ds] || {})[emp.id];
+      if (st === 'present' || st === 'paid-leave') eff += 1;
+      else if (st === 'half-day') eff += 0.5;
+    }
+    var rate = emp.salaryType === 'weekly' ? emp.weeklySalary / U.daysInWeek() : emp.dailyWage;
+    total += rate * eff;
+  }
+  return total;
+}
+
+// ==================== SITES & LOCATIONS ====================
+var Sites = {
+  render: function () {
+    var sites = DB.d.sites;
+    var html = companyLetterhead();
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-map-marker-alt"></i> Sites & Locations (' + sites.length + ')</h3>';
+    html += '<button class="btn btn-success btn-sm" onclick="ExcelExporter.export()"><i class="fas fa-file-excel"></i> Export Excel</button></div>';
+    html += '<div class="card-body" style="padding-bottom:8px">';
+    html += '<p style="font-size:13px;color:#718096;margin-bottom:16px"><i class="fas fa-info-circle"></i> Manage your work sites and office locations. Expenses are tagged to each site.</p>';
+    html += '<div class="form-grid" style="align-items:end">';
+    html += '<div class="form-group"><label>New Site Name *</label><input id="siteNameInput" placeholder="e.g., Site D - Palakkad"></div>';
+    html += '<div class="form-group"><label>Type</label><select id="siteTypeInput"><option value="site">Work Site</option><option value="office">Office</option></select></div>';
+    html += '<div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="Sites.addSite()"><i class="fas fa-plus"></i> Add Site</button></div>';
+    html += '</div></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table>';
+    html += '<thead><tr><th>#</th><th>Name</th><th>Type</th><th class="text-center">Expenses</th><th class="text-right">Total Spent</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    for (var i = 0; i < sites.length; i++) {
+      var s = sites[i];
+      var expCount = U.expenseCountForSite(s.id);
+      var totalSpent = 0;
+      for (var j = 0; j < DB.d.expenses.length; j++) {
+        if (DB.d.expenses[j].siteId == s.id) totalSpent += DB.d.expenses[j].amount;
+      }
+      var typeBadge = s.type === 'office' ? '<span class="badge badge-office">Office</span>' : '<span class="badge badge-site">Work Site</span>';
+      html += '<tr><td>' + s.id + '</td><td><strong>' + s.name + '</strong></td><td>' + typeBadge + '</td>';
+      html += '<td class="text-center"><span class="badge badge-neutral">' + expCount + '</span></td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(totalSpent) + '</strong></td>';
+      html += '<td><span class="badge ' + (s.active ? 'badge-success' : 'badge-danger') + '">' + (s.active ? 'Active' : 'Inactive') + '</span></td>';
+      html += '<td class="actions-cell"><button class="btn btn-outline btn-xs" onclick="Sites.editSite(' + s.id + ')"><i class="fas fa-pen"></i></button> ';
+      html += '<button class="btn btn-danger btn-xs" onclick="Sites.removeSite(' + s.id + ')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    html += '</tbody></table></div></div>';
+    if (!sites.length) html += '<div class="card-body"><div class="table-empty"><i class="fas fa-map-marker-alt"></i><br>No sites added yet.</div></div>';
+    html += '</div>';
+    // Site expense summary
+    var mStart = U.today().slice(0, 8) + '01';
+    var monthExp = DB.d.expenses.filter(function (e) { return e.date >= mStart; });
+    var allTotal = DB.d.expenses.reduce(function (s, e) { return s + e.amount; }, 0);
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Expense by Site</h3><span class="badge badge-primary">' + U.months[new Date().getMonth()] + ' ' + new Date().getFullYear() + '</span></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Site / Location</th><th>Type</th><th class="text-center">Count</th><th class="text-right">This Month</th><th class="text-right">All Time</th><th class="text-center">%</th></tr></thead><tbody>';
+    for (var k = 0; k < sites.length; k++) {
+      var st2 = sites[k];
+      var mExp = monthExp.filter(function (e) { return e.siteId == st2.id; });
+      var aExp = DB.d.expenses.filter(function (e) { return e.siteId == st2.id; });
+      var mT = mExp.reduce(function (s2, e) { return s2 + e.amount; }, 0);
+      var aT = aExp.reduce(function (s2, e) { return s2 + e.amount; }, 0);
+      var pct = allTotal > 0 ? Math.round(aT / allTotal * 100) : 0;
+      html += '<tr><td><strong>' + st2.name + '</strong></td><td>' + (st2.type === 'office' ? '<span class="badge badge-office">Office</span>' : '<span class="badge badge-site">Site</span>') + '</td>';
+      html += '<td class="text-center">' + aExp.length + '</td><td class="text-right"><strong>' + U.fmtMoney(mT) + '</strong></td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(aT) + '</strong></td>';
+      html += '<td class="text-center"><span class="badge badge-primary">' + pct + '%</span></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  addSite: function () {
+    var name = document.getElementById('siteNameInput').value.trim();
+    var type = document.getElementById('siteTypeInput').value;
+    if (!name) { UIC.toast('Enter a site name!', 'error'); return; }
+    var exists = DB.d.sites.some(function (s) { return s.name.toLowerCase() === name.toLowerCase(); });
+    if (exists) { UIC.toast('Site already exists!', 'error'); return; }
+    DB.d.sites.push({ id: ++DB.d.counters.site, name: name, type: type, active: true });
+    DB.save(); UIC.toast('Site "' + name + '" added!'); App.switch('sites');
+  },
+  editSite: function (id) {
+    var site = U.siteById(id); if (!site) return;
+    UIC.openModal('Edit Site',
+      '<div class="form-grid"><div class="form-group"><label>Site Name *</label><input id="editSiteName" value="' + site.name + '"></div>' +
+      '<div class="form-group"><label>Type</label><select id="editSiteType"><option value="site"' + (site.type === 'site' ? ' selected' : '') + '>Work Site</option><option value="office"' + (site.type === 'office' ? ' selected' : '') + '>Office</option></select></div>' +
+      '<div class="form-group"><label>Status</label><select id="editSiteActive"><option value="true"' + (site.active ? ' selected' : '') + '>Active</option><option value="false"' + (!site.active ? ' selected' : '') + '>Inactive</option></select></div></div>',
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-primary" onclick="Sites.updateSite(' + id + ')">Update</button>');
+  },
+  updateSite: function (id) {
+    var site = U.siteById(id); if (!site) return;
+    var name = document.getElementById('editSiteName').value.trim();
+    if (!name) { UIC.toast('Name required!', 'error'); return; }
+    site.name = name; site.type = document.getElementById('editSiteType').value;
+    site.active = document.getElementById('editSiteActive').value === 'true';
+    DB.save(); UIC.closeModal(); UIC.toast('Site updated!'); App.switch('sites');
+  },
+  removeSite: function (id) {
+    var site = U.siteById(id); if (!site) return;
+    var expCount = U.expenseCountForSite(id);
+    var msg = expCount > 0 ? 'Site "' + site.name + '" has ' + expCount + ' expense(s). Delete anyway?' : 'Delete site "' + site.name + '"?';
+    UIC.confirm(msg).then(function (ok) {
+      if (ok) {
+        DB.d.sites = DB.d.sites.filter(function (s) { return s.id != id; });
+        DB.save(); UIC.toast('Site removed!', 'info'); App.switch('sites');
+      }
+    });
+  }
+};
+
+// ==================== DASHBOARD ====================
+var Dashboard = {
+  render: function () {
+    var emps = U.activeEmps(); var today = U.today(); var ws = U.weekStart(today);
+    var att = DB.d.attendance[today] || {};
+    var p = 0, a = 0, hd = 0, pl = 0;
+    for (var i = 0; i < emps.length; i++) {
+      var st = att[emps[i].id];
+      if (st === 'present') p++; else if (st === 'absent') a++; else if (st === 'half-day') hd++; else if (st === 'paid-leave') pl++;
+    }
+    var we = U.weekEnd(today);
+    var weekExp = DB.d.expenses.filter(function (e) { return e.date >= ws && e.date <= we; });
+    var wTotal = weekExp.reduce(function (s, e) { return s + e.amount; }, 0);
+    var mStart = today.slice(0, 8) + '01';
+    var mExp = DB.d.expenses.filter(function (e) { return e.date >= mStart; });
+    var mTotal = mExp.reduce(function (s, e) { return s + e.amount; }, 0);
+    var pAdv = U.totalAllPendingAdv(); var wSal = calcWeekTotal(ws);
+    var recent = DB.d.expenses.slice().sort(function (x, y) { return y.date.localeCompare(x.date); }).slice(0, 6);
+    var html = companyLetterhead();
+    // Stats
+    html += '<div class="stats-grid">';
+    html += '<div class="stat-card"><div class="stat-icon" style="background:rgba(33,150,243,.1);color:#2196F3"><i class="fas fa-users"></i></div><div class="stat-info"><div class="stat-label">Active Employees</div><div class="stat-value">' + emps.length + '</div><div class="stat-change">' + p + ' present today</div></div></div>';
+    html += '<div class="stat-card"><div class="stat-icon" style="background:rgba(76,175,80,.1);color:#4CAF50"><i class="fas fa-calendar-check"></i></div><div class="stat-info"><div class="stat-label">Attendance</div><div class="stat-value">' + p + '/' + emps.length + '</div><div class="stat-change"><span style="color:#4CAF50">' + p + ' P</span> <span style="color:#E53935">' + a + ' A</span> <span style="color:#FF9800">' + hd + ' HD</span></div></div></div>';
+    html += '<div class="stat-card"><div class="stat-icon" style="background:rgba(229,57,53,.1);color:#E53935"><i class="fas fa-receipt"></i></div><div class="stat-info"><div class="stat-label">Week Expenses</div><div class="stat-value">' + U.fmtMoney(wTotal) + '</div><div class="stat-change">Month: ' + U.fmtMoney(mTotal) + '</div></div></div>';
+    html += '<div class="stat-card"><div class="stat-icon" style="background:rgba(255,152,0,.1);color:#FF9800"><i class="fas fa-money-bill-wave"></i></div><div class="stat-info"><div class="stat-label">Week Salary</div><div class="stat-value">' + U.fmtMoney(wSal) + '</div><div class="stat-change">' + U.weekRangeStr(ws) + '</div></div></div>';
+    html += '<div class="stat-card"><div class="stat-icon" style="background:rgba(0,188,212,.1);color:#00BCD4"><i class="fas fa-hand-holding-dollar"></i></div><div class="stat-info"><div class="stat-label">Pending Advances</div><div class="stat-value">' + U.fmtMoney(pAdv) + '</div><div class="stat-change">' + U.allPendingAdv().length + ' record(s)</div></div></div>';
+    html += '</div>';
+    // Quick actions
+    html += '<div class="quick-actions">';
+    html += '<div class="quick-action" onclick="App.switch(\'attendance\')"><i class="fas fa-calendar-check"></i><span>Mark Attendance</span></div>';
+    html += '<div class="quick-action" onclick="Expenses.addNew()"><i class="fas fa-plus-circle"></i><span>Add Expense</span></div>';
+    html += '<div class="quick-action" onclick="Advances.addNew()"><i class="fas fa-hand-holding-dollar"></i><span>Give Advance</span></div>';
+    html += '<div class="quick-action" onclick="App.switch(\'salary\')"><i class="fas fa-money-check-alt"></i><span>Process Salary</span></div>';
+    html += '<div class="quick-action" onclick="ExcelExporter.export()"><i class="fas fa-file-excel" style="color:#4CAF50"></i><span>Export Excel</span></div>';
+    html += '</div>';
+    // Recent expenses
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-clock"></i> Recent Expenses</h3><button class="btn btn-outline btn-sm" onclick="App.switch(\'expenses\')">View All</button></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Site</th><th>Category</th><th>Description</th><th class="text-right">Amount</th></tr></thead><tbody>';
+    for (var i = 0; i < recent.length; i++) {
+      var e = recent[i];
+      html += '<tr><td>' + U.fmtDate(e.date) + '</td><td>' + siteBadge(e.siteId) + '</td><td><span class="badge badge-neutral">' + U.catLabel(e.category) + '</span></td><td>' + e.description + '</td><td class="text-right"><strong>' + U.fmtMoney(e.amount) + '</strong></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {}
+};
+
+// ==================== EMPLOYEES ====================
+var Employees = {
+  render: function () {
+    var html = '<div class="card"><div class="card-header"><h3><i class="fas fa-users"></i> All Employees (' + DB.d.employees.length + ')</h3>';
+    html += '<button class="btn btn-primary btn-sm" onclick="Employees.addNew()"><i class="fas fa-plus"></i> Add Employee</button></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Designation</th><th>Phone</th><th>Type</th><th>Rate</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    for (var i = 0; i < DB.d.employees.length; i++) {
+      var e = DB.d.employees[i];
+      html += '<tr><td>' + e.id + '</td><td><strong>' + e.name + '</strong></td><td>' + e.designation + '</td><td>' + e.phone + '</td>';
+      html += '<td><span class="badge ' + (e.salaryType === 'weekly' ? 'badge-primary' : 'badge-info') + '">' + (e.salaryType === 'weekly' ? 'Weekly' : 'Daily') + '</span></td>';
+      html += '<td>' + (e.salaryType === 'weekly' ? U.fmtMoney(e.weeklySalary) + '/wk' : U.fmtMoney(e.dailyWage) + '/day') + '</td>';
+      html += '<td>' + U.fmtDate(e.joinDate) + '</td>';
+      html += '<td><span class="badge ' + (e.active ? 'badge-success' : 'badge-danger') + '">' + (e.active ? 'Active' : 'Inactive') + '</span></td>';
+      html += '<td class="actions-cell"><button class="btn btn-outline btn-xs" onclick="Employees.edit(' + e.id + ')"><i class="fas fa-pen"></i></button> ';
+      html += '<button class="btn btn-danger btn-xs" onclick="Employees.remove(' + e.id + ')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  form: function (emp) {
+    emp = emp || {};
+    var h = '<div class="form-grid">';
+    h += '<div class="form-group"><label>Full Name *</label><input id="empName" value="' + (emp.name || '') + '"></div>';
+    h += '<div class="form-group"><label>Designation *</label><input id="empDesig" value="' + (emp.designation || '') + '"></div>';
+    h += '<div class="form-group"><label>Phone</label><input id="empPhone" value="' + (emp.phone || '') + '"></div>';
+    h += '<div class="form-group"><label>Join Date</label><input type="date" id="empJoin" value="' + (emp.joinDate || U.today()) + '"></div>';
+    h += '<div class="form-group"><label>Salary Type *</label><select id="empType" onchange="Employees.toggleSF()"><option value="weekly"' + (emp.salaryType !== 'daily' ? ' selected' : '') + '>Weekly Salary</option><option value="daily"' + (emp.salaryType === 'daily' ? ' selected' : '') + '>Daily Wage</option></select></div>';
+    h += '<div class="form-group" id="fWeekly" style="display:' + ((!emp.salaryType || emp.salaryType === 'weekly') ? 'flex' : 'none') + '"><label>Weekly Salary</label><input type="number" id="empWeekly" value="' + (emp.weeklySalary || '') + '"></div>';
+    h += '<div class="form-group" id="fDaily" style="display:' + (emp.salaryType === 'daily' ? 'flex' : 'none') + '"><label>Daily Wage</label><input type="number" id="empDaily" value="' + (emp.dailyWage || '') + '"></div>';
+    h += '<div class="form-group"><label>Status</label><select id="empActive"><option value="true"' + (emp.active !== false ? ' selected' : '') + '>Active</option><option value="false"' + (emp.active === false ? ' selected' : '') + '>Inactive</option></select></div>';
+    h += '</div>';
+    return h;
+  },
+  toggleSF: function () {
+    var t = document.getElementById('empType').value;
+    document.getElementById('fWeekly').style.display = t === 'weekly' ? 'flex' : 'none';
+    document.getElementById('fDaily').style.display = t === 'daily' ? 'flex' : 'none';
+  },
+  addNew: function () {
+    UIC.openModal('Add Employee', this.form(),
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-primary" onclick="Employees.save()">Save</button>');
+  },
+  edit: function (id) {
+    var e = U.empById(id); if (!e) return;
+    UIC.openModal('Edit Employee', this.form(e),
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-primary" onclick="Employees.update(' + id + ')">Update</button>');
+  },
+  getData: function () {
+    return {
+      name: document.getElementById('empName').value.trim(),
+      designation: document.getElementById('empDesig').value.trim(),
+      phone: document.getElementById('empPhone').value.trim(),
+      joinDate: document.getElementById('empJoin').value,
+      salaryType: document.getElementById('empType').value,
+      weeklySalary: Number(document.getElementById('empWeekly').value) || 0,
+      dailyWage: Number(document.getElementById('empDaily').value) || 0,
+      active: document.getElementById('empActive').value === 'true'
+    };
+  },
+  save: function () {
+    var d = this.getData();
+    if (!d.name || !d.designation) { UIC.toast('Name and Designation required!', 'error'); return; }
+    d.id = ++DB.d.counters.emp;
+    DB.d.employees.push(d); DB.save(); UIC.closeModal();
+    UIC.toast('Employee added!'); App.switch('employees');
+  },
+  update: function (id) {
+    var d = this.getData();
+    for (var i = 0; i < DB.d.employees.length; i++) {
+      if (DB.d.employees[i].id == id) {
+        for (var k in d) DB.d.employees[i][k] = d[k];
+        break;
+      }
+    }
+    DB.save(); UIC.closeModal(); UIC.toast('Updated!'); App.switch('employees');
+  },
+  remove: function (id) {
+    UIC.confirm('Delete this employee?').then(function (ok) {
+      if (ok) {
+        DB.d.employees = DB.d.employees.filter(function (e) { return e.id != id; });
+        DB.save(); UIC.toast('Removed!', 'info'); App.switch('employees');
+      }
+    });
+  }
+};
+
+// ==================== ATTENDANCE ====================
+var Attendance = {
+  currentDate: U.today(),
+  render: function () {
+    var date = this.currentDate; var emps = U.activeEmps();
+    var att = DB.d.attendance[date] || {};
+    var statuses = ['present', 'absent', 'half-day', 'paid-leave', 'weekly-off'];
+    var labels = { 'present': 'P', 'absent': 'A', 'half-day': 'HD', 'paid-leave': 'PL', 'weekly-off': 'WO' };
+    var isWed = U.isWednesday(date);
+    var counts = { present: 0, absent: 0, 'half-day': 0, 'paid-leave': 0, 'weekly-off': 0 };
+    for (var i = 0; i < emps.length; i++) { if (att[emps[i].id]) counts[att[emps[i].id]]++; }
+    var unmarked = emps.length - (counts.present + counts['half-day'] + counts.absent + counts['paid-leave'] + counts['weekly-off']);
+    var html = '';
+    if (isWed) html += '<div class="wed-alert"><i class="fas fa-hand-holding-dollar"></i><div>Wednesday - Advance Day!</div><button class="btn btn-warning btn-sm" style="margin-left:auto" onclick="Advances.addNew()"><i class="fas fa-plus"></i> Give Advance</button></div>';
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-calendar-check"></i> Daily Attendance</h3>';
+    html += '<div style="display:flex;gap:8px;align-items:center"><button class="btn btn-outline btn-sm" onclick="Attendance.prevDay()"><i class="fas fa-chevron-left"></i></button>';
+    html += '<input type="date" value="' + date + '" onchange="Attendance.currentDate=this.value;App.switch(\'attendance\')" style="padding:6px 10px;border:2px solid #E2E8F0;border-radius:8px;font-family:inherit">';
+    html += '<button class="btn btn-outline btn-sm" onclick="Attendance.nextDay()"><i class="fas fa-chevron-right"></i></button></div></div>';
+    html += '<div class="card-body" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">';
+    html += '<div><strong style="font-size:16px">' + U.fmtDateLong(date) + '</strong><div style="font-size:12px;color:#718096">' + U.dayName(date) + '</div></div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-success btn-sm" onclick="Attendance.markAll(\'present\')"><i class="fas fa-check"></i> All P</button>';
+    html += '<button class="btn btn-danger btn-sm" onclick="Attendance.markAll(\'absent\')"><i class="fas fa-times"></i> All A</button>';
+    html += '<button class="btn btn-outline btn-sm" onclick="Attendance.markAll(\'weekly-off\')"><i class="fas fa-home"></i> All W/O</button></div></div>';
+    html += '<div class="summary-row"><div class="summary-box" style="border-left:4px solid #4CAF50"><div class="sum-val">' + counts.present + '</div><div class="sum-label">Present</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #FF9800"><div class="sum-val">' + counts['half-day'] + '</div><div class="sum-label">Half Day</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #E53935"><div class="sum-val">' + counts.absent + '</div><div class="sum-label">Absent</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #00BCD4"><div class="sum-val">' + counts['paid-leave'] + '</div><div class="sum-label">Paid Leave</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #9E9E9E"><div class="sum-val">' + unmarked + '</div><div class="sum-label">Unmarked</div></div></div></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Employee</th><th>Designation</th><th style="min-width:320px">Status</th></tr></thead><tbody>';
+    for (var i = 0; i < emps.length; i++) {
+      var e = emps[i]; var cur = att[e.id] || '';
+      html += '<tr><td>' + e.id + '</td><td><strong>' + e.name + '</strong></td><td>' + e.designation + '</td><td><div class="att-buttons" data-emp="' + e.id + '">';
+      for (var j = 0; j < statuses.length; j++) {
+        var s = statuses[j];
+        var activeCls = cur === s ? ' active-' + s : '';
+        html += '<button class="att-btn' + activeCls + '" data-status="' + s + '" onclick="Attendance.mark(' + e.id + ',\'' + s + '\')">' + labels[s] + '</button>';
+      }
+      html += '</div></td></tr>';
+    }
+    html += '</tbody></table></div></div>';
+    html += '<div class="card-footer" style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#718096">' + emps.length + ' employees</span>';
+    html += '<button class="btn btn-primary" onclick="Attendance.save()"><i class="fas fa-save"></i> Save Attendance</button></div></div>';
+    // Monthly summary
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Monthly Summary</h3></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Employee</th><th class="text-center">P</th><th class="text-center">HD</th><th class="text-center">A</th><th class="text-center">PL</th><th class="text-center">WO</th><th class="text-center">Eff.D</th><th class="text-center">%</th></tr></thead><tbody>';
+    html += Attendance.monthSummary(new Date().getMonth(), new Date().getFullYear());
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  prevDay: function () { this.currentDate = U.addDays(this.currentDate, -1); App.switch('attendance'); },
+  nextDay: function () { this.currentDate = U.addDays(this.currentDate, 1); App.switch('attendance'); },
+  mark: function (id, s) {
+    var w = document.querySelector('.att-buttons[data-emp="' + id + '"]');
+    if (!w) return;
+    var btns = w.querySelectorAll('.att-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].className = 'att-btn';
+      if (btns[i].dataset.status === s) btns[i].className = 'att-btn active-' + s;
+    }
+  },
+  markAll: function (s) {
+    var emps = U.activeEmps();
+    for (var i = 0; i < emps.length; i++) this.mark(emps[i].id, s);
+  },
+  save: function () {
+    var date = this.currentDate; var att = {}; var emps = U.activeEmps();
+    for (var i = 0; i < emps.length; i++) {
+      var w = document.querySelector('.att-buttons[data-emp="' + emps[i].id + '"]');
+      if (!w) continue;
+      var btns = w.querySelectorAll('.att-btn');
+      for (var j = 0; j < btns.length; j++) {
+        if (btns[j].className.indexOf('active-' + btns[j].dataset.status) >= 0) att[emps[i].id] = btns[j].dataset.status;
+      }
+    }
+    DB.d.attendance[date] = att; DB.save(); UIC.toast('Attendance saved!');
+  },
+  monthSummary: function (mi, y) {
+    var emps = U.activeEmps(); var days = new Date(y, mi + 1, 0).getDate(); var html = '';
+    for (var i = 0; i < emps.length; i++) {
+      var emp = emps[i]; var p = 0, hd = 0, a = 0, pl = 0, wo = 0;
+      for (var d = 1; d <= days; d++) {
+        var ds = y + '-' + String(mi + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        if (U.isSunday(ds)) { wo++; continue; }
+        var st = (DB.d.attendance[ds] || {})[emp.id];
+        if (st === 'present') p++; else if (st === 'half-day') hd++; else if (st === 'absent') a++; else if (st === 'paid-leave') pl++; else if (st === 'weekly-off') wo++;
+      }
+      var eff = p + hd * 0.5 + pl;
+      var totalWk = U.daysInWeek() * Math.ceil(days / 7);
+      var pct = totalWk > 0 ? Math.round(eff / totalWk * 100) : 0;
+      var pctCls = pct >= 90 ? 'badge-success' : pct >= 75 ? 'badge-warning' : 'badge-danger';
+      html += '<tr><td><strong>' + emp.name + '</strong></td>';
+      html += '<td class="text-center"><span class="badge badge-success">' + p + '</span></td>';
+      html += '<td class="text-center"><span class="badge badge-warning">' + hd + '</span></td>';
+      html += '<td class="text-center"><span class="badge badge-danger">' + a + '</span></td>';
+      html += '<td class="text-center"><span class="badge badge-info">' + pl + '</span></td>';
+      html += '<td class="text-center"><span class="badge badge-neutral">' + wo + '</span></td>';
+      html += '<td class="text-center"><strong>' + eff.toFixed(1) + '</strong></td>';
+      html += '<td class="text-center"><span class="badge ' + pctCls + '">' + pct + '%</span></td></tr>';
+    }
+    return html;
+  }
+};
+
+// ==================== EXPENSES ====================
+var Expenses = {
+  filters: { start: '', end: '', category: '', siteId: '' },
+  render: function () {
+    var exps = DB.d.expenses.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var f = this.filters;
+    if (f.start) exps = exps.filter(function (e) { return e.date >= f.start; });
+    if (f.end) exps = exps.filter(function (e) { return e.date <= f.end; });
+    if (f.category) exps = exps.filter(function (e) { return e.category === f.category; });
+    if (f.siteId) exps = exps.filter(function (e) { return e.siteId == f.siteId; });
+    var total = exps.reduce(function (s, e) { return s + e.amount; }, 0);
+    var cats = ['materials', 'transport', 'office', 'utilities', 'equipment', 'maintenance', 'food', 'labor', 'other'];
+    var sites = U.allSites();
+    var html = '<div class="summary-row"><div class="summary-box" style="border-left:4px solid #E53935"><div class="sum-val">' + U.fmtMoney(total) + '</div><div class="sum-label">Filtered Total</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #2196F3"><div class="sum-val">' + exps.length + '</div><div class="sum-label">Entries</div></div></div>';
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-receipt"></i> Expenses</h3><div style="display:flex;gap:8px">';
+    html += '<button class="btn btn-outline btn-sm" onclick="App.switch(\'sites\')"><i class="fas fa-map-marker-alt"></i> Sites</button>';
+    html += '<button class="btn btn-primary btn-sm" onclick="Expenses.addNew()"><i class="fas fa-plus"></i> Add Expense</button></div></div>';
+    // Filters
+    html += '<div class="filter-bar">';
+    html += '<div class="form-group"><label>From</label><input type="date" value="' + f.start + '" onchange="Expenses.filters.start=this.value;App.switch(\'expenses\')"></div>';
+    html += '<div class="form-group"><label>To</label><input type="date" value="' + f.end + '" onchange="Expenses.filters.end=this.value;App.switch(\'expenses\')"></div>';
+    html += '<div class="form-group"><label>Category</label><select onchange="Expenses.filters.category=this.value;App.switch(\'expenses\')"><option value="">All</option>';
+    for (var c = 0; c < cats.length; c++) html += '<option value="' + cats[c] + '"' + (f.category === cats[c] ? ' selected' : '') + '>' + U.catLabel(cats[c]) + '</option>';
+    html += '</select></div>';
+    html += '<div class="form-group"><label>Site</label><select onchange="Expenses.filters.siteId=this.value;App.switch(\'expenses\')"><option value="">All Sites</option>';
+    for (var si = 0; si < sites.length; si++) html += '<option value="' + sites[si].id + '"' + (f.siteId == sites[si].id ? ' selected' : '') + '>' + sites[si].name + '</option>';
+    html += '</select></div>';
+    html += '<button class="btn btn-outline btn-sm" onclick="Expenses.filters={start:\'\',end:\'\',category:\'\',siteId:\'\'};App.switch(\'expenses\')"><i class="fas fa-times"></i> Clear</button>';
+    html += '<button class="btn btn-success btn-sm" onclick="ExcelExporter.export()"><i class="fas fa-file-excel"></i> Excel</button>';
+    html += '</div>';
+    // Table
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Site</th><th>Category</th><th>Description</th><th>Method</th><th>Paid By</th><th>Receipt</th><th class="text-right">Amount</th><th>Actions</th></tr></thead><tbody>';
+    for (var i = 0; i < exps.length; i++) {
+      var e = exps[i];
+      html += '<tr><td>' + e.id + '</td><td>' + U.fmtDate(e.date) + '</td><td>' + siteBadge(e.siteId) + '</td>';
+      html += '<td><span class="badge badge-neutral">' + U.catLabel(e.category) + '</span></td><td>' + e.description + '</td>';
+      html += '<td>' + U.payLabel(e.paymentMethod) + '</td><td>' + e.paidBy + '</td><td>' + (e.receiptNo || '-') + '</td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(e.amount) + '</strong></td>';
+      html += '<td class="actions-cell"><button class="btn btn-outline btn-xs" onclick="Expenses.edit(' + e.id + ')"><i class="fas fa-pen"></i></button> ';
+      html += '<button class="btn btn-danger btn-xs" onclick="Expenses.remove(' + e.id + ')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    if (!exps.length) html += '<tr><td colspan="10" class="table-empty"><i class="fas fa-receipt"></i><br>No expenses found</td></tr>';
+    html += '</tbody><tfoot><tr style="font-weight:700;background:#f7fafc"><td colspan="8" class="text-right">TOTAL</td><td class="text-right">' + U.fmtMoney(total) + '</td><td></td></tr></tfoot></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  form: function (exp) {
+    exp = exp || {};
+    var cats = ['materials', 'transport', 'office', 'utilities', 'equipment', 'maintenance', 'food', 'labor', 'other'];
+    var methods = ['cash', 'upi', 'bank', 'cheque', 'card'];
+    var sites = U.allSites();
+    var h = '<div class="form-grid">';
+    h += '<div class="form-group"><label>Date *</label><input type="date" id="expDate" value="' + (exp.date || U.today()) + '"></div>';
+    h += '<div class="form-group"><label>Site / Location *</label><select id="expSite"><option value="">-- Select Site --</option>';
+    for (var i = 0; i < sites.length; i++) {
+      h += '<option value="' + sites[i].id + '"' + (exp.siteId == sites[i].id ? ' selected' : '') + '>' + (sites[i].type === 'office' ? '[O] ' : '[S] ') + sites[i].name + '</option>';
+    }
+    h += '</select><span style="font-size:11px;color:#a0aec0;cursor:pointer" onclick="UIC.closeModal();App.switch(\'sites\')"><i class="fas fa-plus"></i> Manage Sites</span></div>';
+    h += '<div class="form-group"><label>Category *</label><select id="expCat">';
+    for (var c = 0; c < cats.length; c++) h += '<option value="' + cats[c] + '"' + (exp.category === cats[c] ? ' selected' : '') + '>' + U.catLabel(cats[c]) + '</option>';
+    h += '</select></div>';
+    h += '<div class="form-group form-full"><label>Description *</label><input id="expDesc" value="' + (exp.description || '') + '"></div>';
+    h += '<div class="form-group"><label>Amount *</label><input type="number" id="expAmt" value="' + (exp.amount || '') + '"></div>';
+    h += '<div class="form-group"><label>Payment Method</label><select id="expMethod">';
+    for (var m = 0; m < methods.length; m++) h += '<option value="' + methods[m] + '"' + (exp.paymentMethod === methods[m] ? ' selected' : '') + '>' + U.payLabel(methods[m]) + '</option>';
+    h += '</select></div>';
+    h += '<div class="form-group"><label>Paid By</label><input id="expPayer" value="' + (exp.paidBy || '') + '"></div>';
+    h += '<div class="form-group"><label>Receipt No</label><input id="expReceipt" value="' + (exp.receiptNo || '') + '"></div>';
+    h += '</div>';
+    return h;
+  },
+  addNew: function () {
+    if (!U.allSites().length) { UIC.toast('Add sites first!', 'warning'); App.switch('sites'); return; }
+    UIC.openModal('Add Expense', this.form(),
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-primary" onclick="Expenses.save()">Save</button>');
+  },
+  edit: function (id) {
+    var e = DB.d.expenses.find(function (x) { return x.id == id; }); if (!e) return;
+    UIC.openModal('Edit Expense', this.form(e),
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-primary" onclick="Expenses.update(' + id + ')">Update</button>');
+  },
+  getData: function () {
+    return {
+      date: document.getElementById('expDate').value,
+      category: document.getElementById('expCat').value,
+      description: document.getElementById('expDesc').value.trim(),
+      amount: Number(document.getElementById('expAmt').value) || 0,
+      siteId: Number(document.getElementById('expSite').value) || null,
+      paymentMethod: document.getElementById('expMethod').value,
+      paidBy: document.getElementById('expPayer').value.trim(),
+      receiptNo: document.getElementById('expReceipt').value.trim()
+    };
+  },
+  save: function () {
+    var d = this.getData();
+    if (!d.description || !d.amount) { UIC.toast('Description and amount required!', 'error'); return; }
+    if (!d.siteId) { UIC.toast('Select a Site!', 'error'); return; }
+    d.id = ++DB.d.counters.exp;
+    DB.d.expenses.push(d); DB.save(); UIC.closeModal();
+    UIC.toast('Expense added!'); App.switch('expenses');
+  },
+  update: function (id) {
+    var d = this.getData();
+    for (var i = 0; i < DB.d.expenses.length; i++) {
+      if (DB.d.expenses[i].id == id) { for (var k in d) DB.d.expenses[i][k] = d[k]; break; }
+    }
+    DB.save(); UIC.closeModal(); UIC.toast('Updated!'); App.switch('expenses');
+  },
+  remove: function (id) {
+    UIC.confirm('Delete this expense?').then(function (ok) {
+      if (ok) {
+        DB.d.expenses = DB.d.expenses.filter(function (e) { return e.id != id; });
+        DB.save(); UIC.toast('Removed!', 'info'); App.switch('expenses');
+      }
+    });
+  }
+};
+
+// ==================== SALARY (FIXED: no variable shadowing) ====================
+var Salary = {
+  selectedDate: U.today(),
+  render: function () {
+    var ws = U.weekStart(this.selectedDate);
+    var calcs = this.calculate(ws);
+    var tGross = 0, tAdv = 0, tNet = 0;
+    for (var i = 0; i < calcs.length; i++) { tGross += calcs[i].grossPay; tAdv += calcs[i].advanceDeduction; tNet += calcs[i].netPay; }
+    var html = '<div class="card"><div class="card-header"><h3><i class="fas fa-money-bill-wave"></i> Weekly Salary</h3><span class="badge badge-primary">Weekly Disbursement</span></div>';
+    html += '<div class="week-nav"><button class="btn btn-outline btn-sm" onclick="Salary.prevWeek()"><i class="fas fa-chevron-left"></i> Prev</button>';
+    html += '<div class="week-label">' + U.weekRangeStr(ws) + '</div>';
+    html += '<button class="btn btn-outline btn-sm" onclick="Salary.nextWeek()">Next <i class="fas fa-chevron-right"></i></button>';
+    html += '<input type="date" value="' + this.selectedDate + '" onchange="Salary.selectedDate=this.value;App.switch(\'salary\')">';
+    html += '<button class="btn btn-success btn-sm" style="margin-left:auto" onclick="Salary.processAll()"><i class="fas fa-check-double"></i> Process All</button></div>';
+    html += '<div class="summary-row" style="padding:16px 20px;margin-bottom:0">';
+    html += '<div class="summary-box" style="border-left:4px solid #2196F3"><div class="sum-val">' + U.fmtMoney(tGross) + '</div><div class="sum-label">Gross</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #FF9800"><div class="sum-val">' + U.fmtMoney(tAdv) + '</div><div class="sum-label">Adv. Ded.</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #4CAF50"><div class="sum-val">' + U.fmtMoney(tNet) + '</div><div class="sum-label">Net Pay</div></div></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Employee</th><th>Type</th><th class="text-center">Days</th><th class="text-center">Eff.D</th><th class="text-right">Rate</th><th class="text-right">Gross</th><th class="text-right">Adv.Ded.</th><th class="text-right">Net</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+    for (var i = 0; i < calcs.length; i++) {
+      var c = calcs[i];
+      var ex = DB.d.salaryPayments.find(function (p) { return p.employeeId == c.emp.id && p.weekStart === ws; });
+      html += '<tr><td>' + c.emp.id + '</td><td><strong>' + c.emp.name + '</strong><br><small style="color:#718096">' + c.emp.designation + '</small></td>';
+      html += '<td><span class="badge ' + (c.emp.salaryType === 'weekly' ? 'badge-primary' : 'badge-info') + '">' + (c.emp.salaryType === 'weekly' ? 'Weekly' : 'Daily') + '</span></td>';
+      html += '<td class="text-center">' + c.present + 'P ' + c.halfDay + 'HD ' + c.absent + 'A ' + c.leave + 'PL</td>';
+      html += '<td class="text-center"><strong>' + c.effectiveDays.toFixed(1) + '</strong></td>';
+      html += '<td class="text-right">' + U.fmtMoney(c.rate) + '</td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(c.grossPay) + '</strong></td>';
+      html += '<td class="text-right" style="color:' + (c.advanceDeduction > 0 ? '#E53935' : '#a0aec0') + '">' + (c.advanceDeduction > 0 ? '-' + U.fmtMoney(c.advanceDeduction) : '-') + '</td>';
+      html += '<td class="text-right"><strong style="color:#4CAF50;font-size:15px">' + U.fmtMoney(c.netPay) + '</strong></td>';
+      html += '<td>' + (ex ? '<span class="badge badge-success">Paid</span>' : '<span class="badge badge-warning">Pending</span>') + '</td>';
+      html += '<td class="actions-cell">' + (ex ? '' : '<button class="btn btn-success btn-xs" onclick="Salary.payOne(' + c.emp.id + ',\'' + ws + '\')"><i class="fas fa-money-bill"></i> Pay</button>') + '</td></tr>';
+    }
+    html += '</tbody><tfoot><tr style="font-weight:700;background:#f7fafc"><td colspan="6" class="text-right">TOTAL</td><td class="text-right">' + U.fmtMoney(tGross) + '</td><td class="text-right" style="color:#E53935">-' + U.fmtMoney(tAdv) + '</td><td class="text-right">' + U.fmtMoney(tNet) + '</td><td colspan="2"></td></tr></tfoot></table></div></div>';
+    html += '<div class="card-footer" style="font-size:12px;color:#718096">Rate = Weekly Salary / 6 or Daily Wage. Advances auto-deducted FIFO.</div></div>';
+    // History
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Payment History</h3></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Employee</th><th>Week</th><th>Days</th><th class="text-right">Gross</th><th class="text-right">Adv.Ded.</th><th class="text-right">Net</th><th>Date</th></tr></thead><tbody>';
+    var pays = DB.d.salaryPayments.slice().reverse().slice(0, 20);
+    for (var i = 0; i < pays.length; i++) {
+      var p = pays[i];
+      html += '<tr><td>' + p.id + '</td><td><strong>' + U.empName(p.employeeId) + '</strong></td>';
+      html += '<td>' + U.weekRangeStr(p.weekStart) + '</td><td>' + p.daysWorked + '</td>';
+      html += '<td class="text-right">' + U.fmtMoney(p.grossPay) + '</td>';
+      html += '<td class="text-right" style="color:#E53935">' + (p.advanceDeduction ? '-' + U.fmtMoney(p.advanceDeduction) : '-') + '</td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(p.netPay) + '</strong></td><td>' + U.fmtDate(p.paymentDate) + '</td></tr>';
+    }
+    if (!pays.length) html += '<tr><td colspan="8" class="table-empty"><i class="fas fa-money-bill"></i><br>No payments yet</td></tr>';
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  prevWeek: function () { this.selectedDate = U.addDays(this.selectedDate, -7); App.switch('salary'); },
+  nextWeek: function () { this.selectedDate = U.addDays(this.selectedDate, 7); App.switch('salary'); },
+  calculate: function (ws) {
+    var emps = U.activeEmps();
+    var result = [];
+    for (var i = 0; i < emps.length; i++) {
+      var emp = emps[i];
+      var p = 0, hd = 0, a = 0, pl = 0;
+      for (var j = 0; j < 7; j++) {
+        var ds = U.addDays(ws, j);
+        if (!U.isWorkday(ds)) continue;
+        var st = (DB.d.attendance[ds] || {})[emp.id];
+        if (st === 'present') p++;
+        else if (st === 'half-day') hd++;
+        else if (st === 'absent') a++;
+        else if (st === 'paid-leave') pl++;
+      }
+      var eff = p + hd * 0.5 + pl;
+      var rate = emp.salaryType === 'weekly' ? emp.weeklySalary / U.daysInWeek() : emp.dailyWage;
+      var gross = Math.round(rate * eff);
+      // FIX: renamed loop variable 'adv' instead of 'a' to avoid shadowing
+      var advDed = 0, remaining = gross;
+      var pends = U.pendingAdvances(emp.id).sort(function (x, y) { return x.date.localeCompare(y.date); });
+      for (var k = 0; k < pends.length; k++) {
+        var adv = pends[k];
+        var advRem = adv.amount - adv.deductedAmount;
+        if (advRem <= 0 || remaining <= 0) break;
+        var toDed = Math.min(advRem, remaining);
+        advDed += toDed;
+        remaining -= toDed;
+      }
+      result.push({ emp: emp, present: p, halfDay: hd, absent: a, leave: pl, effectiveDays: eff, rate: rate, grossPay: gross, advanceDeduction: advDed, otherDeduction: 0, netPay: Math.max(0, gross - advDed) });
+    }
+    return result;
+  },
+  payOne: function (empId, ws) {
+    var calc = null;
+    var calcs = this.calculate(ws);
+    for (var i = 0; i < calcs.length; i++) { if (calcs[i].emp.id == empId) { calc = calcs[i]; break; } }
+    if (!calc) return;
+    var self = this;
+    UIC.confirm('Pay ' + U.fmtMoney(calc.netPay) + ' to ' + calc.emp.name + '?').then(function (ok) {
+      if (ok) self.recordPayment(calc, ws);
+    });
+  },
+  processAll: function () {
+    var ws = U.weekStart(this.selectedDate);
+    var calcs = this.calculate(ws);
+    var unpaid = [];
+    for (var i = 0; i < calcs.length; i++) {
+      var found = DB.d.salaryPayments.find(function (p) { return p.employeeId == calcs[i].emp.id && p.weekStart === ws; });
+      if (!found) unpaid.push(calcs[i]);
+    }
+    if (!unpaid.length) { UIC.toast('All processed!', 'info'); return; }
+    var total = 0;
+    for (var i = 0; i < unpaid.length; i++) total += unpaid[i].netPay;
+    var self = this;
+    UIC.confirmDefault('Process ' + unpaid.length + ' payment(s) totaling ' + U.fmtMoney(total) + '?').then(function (ok) {
+      if (ok) {
+        for (var i = 0; i < unpaid.length; i++) self.recordPayment(unpaid[i], ws);
+        UIC.toast('Processed ' + unpaid.length + ' payments!');
+        App.switch('salary');
+      }
+    });
+  },
+  recordPayment: function (calc, ws) {
+    // Deduct advances FIFO
+    var rem = calc.advanceDeduction;
+    var pends = U.pendingAdvances(calc.emp.id).sort(function (a, b) { return a.date.localeCompare(b.date); });
+    for (var i = 0; i < pends.length; i++) {
+      if (rem <= 0) break;
+      var advRem = pends[i].amount - pends[i].deductedAmount;
+      var toDed = Math.min(advRem, rem);
+      pends[i].deductedAmount += toDed;
+      rem -= toDed;
+      if (pends[i].deductedAmount >= pends[i].amount) pends[i].status = 'adjusted';
+    }
+    DB.d.salaryPayments.push({
+      id: ++DB.d.counters.sal, employeeId: calc.emp.id,
+      weekStart: ws, weekEnd: U.weekEnd(ws),
+      daysWorked: calc.effectiveDays, grossPay: calc.grossPay,
+      advanceDeduction: calc.advanceDeduction, otherDeduction: calc.otherDeduction,
+      netPay: calc.netPay, paymentDate: U.today(), paymentMethod: 'cash', status: 'paid'
+    });
+    DB.save();
+    UIC.toast('Paid ' + U.fmtMoney(calc.netPay) + ' to ' + calc.emp.name + '!');
+  }
+};
+
+// ==================== ADVANCES ====================
+var Advances = {
+  render: function () {
+    var today = U.today();
+    var isWed = U.isWednesday(today);
+    var advs = DB.d.advances.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var pendTotal = U.totalAllPendingAdv();
+    var html = '';
+    if (isWed) html += '<div class="wed-alert"><i class="fas fa-hand-holding-dollar"></i><div><strong>Wednesday - Advance Day!</strong></div></div>';
+    else html += '<div class="not-wed"><i class="fas fa-info-circle"></i> Today is <strong>' + U.dayName(today) + '</strong>. Advances typically given on <strong>Wednesdays</strong>.</div>';
+    html += '<div class="summary-row">';
+    html += '<div class="summary-box" style="border-left:4px solid #FF9800"><div class="sum-val">' + U.fmtMoney(pendTotal) + '</div><div class="sum-label">Pending</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #00BCD4"><div class="sum-val">' + U.allPendingAdv().length + '</div><div class="sum-label">Records</div></div>';
+    html += '<div class="summary-box" style="border-left:4px solid #4CAF50"><div class="sum-val">' + DB.d.advances.filter(function (a) { return a.status === 'adjusted'; }).length + '</div><div class="sum-label">Settled</div></div></div>';
+    html += '<div class="quick-actions"><div class="quick-action" onclick="Advances.addNew()"><i class="fas fa-hand-holding-dollar"></i><span>Give Advance</span></div>';
+    html += '<div class="quick-action" onclick="App.switch(\'salary\')"><i class="fas fa-money-check-alt"></i><span>Salary Processing</span></div></div>';
+    // All advances
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-hand-holding-dollar"></i> All Advances (' + advs.length + ')</h3>';
+    html += '<button class="btn btn-warning btn-sm" onclick="Advances.addNew()"><i class="fas fa-plus"></i> Give Advance</button></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Day</th><th>Employee</th><th class="text-right">Amount</th><th class="text-right">Deducted</th><th class="text-right">Remaining</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    for (var i = 0; i < advs.length; i++) {
+      var adv = advs[i];
+      var rem = adv.amount - adv.deductedAmount;
+      var statusHtml = adv.status === 'adjusted' ? '<span class="badge badge-success">Settled</span>' : (adv.deductedAmount > 0 ? '<span class="badge badge-info">Partial</span>' : '<span class="badge badge-warning">Pending</span>');
+      html += '<tr><td>' + adv.id + '</td><td>' + U.fmtDate(adv.date) + '</td><td>' + U.dayNameShort(adv.date) + '</td>';
+      html += '<td><strong>' + U.empName(adv.employeeId) + '</strong></td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(adv.amount) + '</strong></td>';
+      html += '<td class="text-right" style="color:#4CAF50">' + (adv.deductedAmount ? U.fmtMoney(adv.deductedAmount) : '-') + '</td>';
+      html += '<td class="text-right"><strong style="color:' + (rem > 0 ? '#FF9800' : '#a0aec0') + '">' + (rem > 0 ? U.fmtMoney(rem) : '-') + '</strong></td>';
+      html += '<td>' + (adv.reason || '-') + '</td><td>' + statusHtml + '</td>';
+      html += '<td class="actions-cell">' + (adv.status === 'pending' ? '<button class="btn btn-danger btn-xs" onclick="Advances.remove(' + adv.id + ')"><i class="fas fa-trash"></i></button>' : '') + '</td></tr>';
+    }
+    if (!advs.length) html += '<tr><td colspan="10" class="table-empty"><i class="fas fa-hand-holding-dollar"></i><br>No advances</td></tr>';
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  bind: function () {},
+  form: function () {
+    var emps = U.activeEmps();
+    var h = '<div class="form-grid"><div class="form-group"><label>Employee *</label><select id="advEmp">';
+    for (var i = 0; i < emps.length; i++) h += '<option value="' + emps[i].id + '">' + emps[i].name + ' - ' + emps[i].designation + '</option>';
+    h += '</select></div>';
+    h += '<div class="form-group"><label>Date *</label><input type="date" id="advDate" value="' + U.today() + '" onchange="Advances.checkWed()"></div>';
+    h += '<div class="form-group"><label>Amount *</label><input type="number" id="advAmt"></div>';
+    h += '<div class="form-group"><label>Reason</label><input id="advReason"></div>';
+    h += '<div class="form-group"><label>Paid By</label><input id="advPayer" value="Meera Nair"></div></div>';
+    h += '<div id="wedWarning" style="margin-top:12px"></div>';
+    return h;
+  },
+  checkWed: function () {
+    var d = document.getElementById('advDate').value;
+    var el = document.getElementById('wedWarning');
+    if (U.isWednesday(d)) {
+      el.innerHTML = '<div style="background:#E8F5E9;color:#2E7D32;padding:10px 16px;border-radius:8px;display:flex;align-items:center;gap:10px"><i class="fas fa-check-circle"></i> Wednesday - Perfect day for advances!</div>';
+    } else {
+      el.innerHTML = '<div class="not-wed" style="margin-bottom:0"><i class="fas fa-exclamation-triangle"></i> This is <strong>' + U.dayName(d) + '</strong>, not Wednesday.</div>';
+    }
+  },
+  addNew: function () {
+    UIC.openModal('Give Advance', this.form(),
+      '<button class="btn btn-outline" onclick="UIC.closeModal()">Cancel</button><button class="btn btn-warning" onclick="Advances.save()"><i class="fas fa-hand-holding-dollar"></i> Give Advance</button>');
+    this.checkWed();
+  },
+  save: function () {
+    var empId = Number(document.getElementById('advEmp').value);
+    var date = document.getElementById('advDate').value;
+    var amount = Number(document.getElementById('advAmt').value) || 0;
+    if (!empId || !amount || amount <= 0) { UIC.toast('Select employee and valid amount!', 'error'); return; }
+    DB.d.advances.push({
+      id: ++DB.d.counters.adv, employeeId: empId, date: date, amount: amount,
+      reason: document.getElementById('advReason').value.trim(),
+      paidBy: document.getElementById('advPayer').value.trim() || 'Meera Nair',
+      deductedAmount: 0, status: 'pending', salaryPaymentId: null
+    });
+    DB.save(); UIC.closeModal();
+    UIC.toast('Advance of ' + U.fmtMoney(amount) + ' given!'); App.switch('advances');
+  },
+  remove: function (id) {
+    UIC.confirm('Delete this advance?').then(function (ok) {
+      if (ok) {
+        DB.d.advances = DB.d.advances.filter(function (a) { return a.id != id; });
+        DB.save(); UIC.toast('Removed!', 'info'); App.switch('advances');
+      }
+    });
+  }
+};
+
+// ==================== REPORTS (FIXED: uses = not :) ====================
+var Reports = {
+  tab: 'expense',
+  render: function () {
+    var html = '<div class="report-tabs">';
+    html += '<div class="report-tab' + (this.tab === 'expense' ? ' active' : '') + '" onclick="Reports.tab=\'expense\';App.switch(\'reports\')"><i class="fas fa-receipt"></i> Expense</div>';
+    html += '<div class="report-tab' + (this.tab === 'site' ? ' active' : '') + '" onclick="Reports.tab=\'site\';App.switch(\'reports\')"><i class="fas fa-map-marker-alt"></i> Site-wise</div>';
+    html += '<div class="report-tab' + (this.tab === 'attendance' ? ' active' : '') + '" onclick="Reports.tab=\'attendance\';App.switch(\'reports\')"><i class="fas fa-calendar-check"></i> Attendance</div>';
+    html += '<div class="report-tab' + (this.tab === 'salary' ? ' active' : '') + '" onclick="Reports.tab=\'salary\';App.switch(\'reports\')"><i class="fas fa-money-bill-wave"></i> Salary</div>';
+    html += '<div class="report-tab' + (this.tab === 'advance' ? ' active' : '') + '" onclick="Reports.tab=\'advance\';App.switch(\'reports\')"><i class="fas fa-hand-holding-dollar"></i> Advance</div></div>';
+    html += '<div class="no-print" style="margin-bottom:16px;display:flex;gap:8px"><button class="btn btn-primary btn-sm" onclick="ExcelExporter.export()"><i class="fas fa-file-excel"></i> Export All to Excel</button><button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button></div>';
+    html += companyLetterhead();
+    if (this.tab === 'expense') html += this.expReport();
+    else if (this.tab === 'site') html += this.siteReport();
+    else if (this.tab === 'attendance') html += this.attReport();
+    else if (this.tab === 'salary') html += this.salReport();
+    else html += this.advReport();
+    return html;
+  },
+  bind: function () {},
+  expReport: function () {
+    var mStart = U.today().slice(0, 8) + '01';
+    var exps = DB.d.expenses.filter(function (e) { return e.date >= mStart; });
+    var cats = {};
+    for (var i = 0; i < exps.length; i++) { cats[exps[i].category] = (cats[exps[i].category] || 0) + exps[i].amount; }
+    var entries = Object.entries(cats).sort(function (a, b) { return b[1] - a[1]; });
+    var total = exps.reduce(function (s, e) { return s + e.amount; }, 0);
+    var html = '<div class="card"><div class="card-header"><h3>Expense by Category</h3></div><div class="card-body"><div class="report-chart">';
+    var maxC = entries.length ? entries[0][1] : 1;
+    for (var i = 0; i < entries.length; i++) {
+      html += '<div class="chart-bar-wrap"><div class="chart-value">' + U.fmtMoney(entries[i][1]) + '</div><div class="chart-bar" style="height:' + Math.max(8, (entries[i][1] / maxC) * 100) + 'px"></div><div class="chart-label">' + U.catLabel(entries[i][0]) + '</div></div>';
+    }
+    html += '</div></div><div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Category</th><th class="text-right">Amount</th><th class="text-center">%</th></tr></thead><tbody>';
+    for (var i = 0; i < entries.length; i++) {
+      html += '<tr><td><strong>' + U.catLabel(entries[i][0]) + '</strong></td><td class="text-right"><strong>' + U.fmtMoney(entries[i][1]) + '</strong></td><td class="text-center"><span class="badge badge-primary">' + (total ? Math.round(entries[i][1] / total * 100) : 0) + '%</span></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  siteReport: function () {
+    var mStart = U.today().slice(0, 8) + '01';
+    var sites = DB.d.sites;
+    var monthExp = DB.d.expenses.filter(function (e) { return e.date >= mStart; });
+    var allTotal = DB.d.expenses.reduce(function (s, e) { return s + e.amount; }, 0);
+    var html = '<div class="card"><div class="card-header"><h3><i class="fas fa-map-marker-alt"></i> Site-wise Expenses</h3></div>';
+    html += '<div class="card-body"><div class="report-chart">';
+    var maxSite = 1;
+    for (var i = 0; i < sites.length; i++) {
+      var t = monthExp.filter(function (e) { return e.siteId == sites[i].id; }).reduce(function (s, e) { return s + e.amount; }, 0);
+      if (t > maxSite) maxSite = t;
+    }
+    for (var i = 0; i < sites.length; i++) {
+      var t = monthExp.filter(function (e) { return e.siteId == sites[i].id; }).reduce(function (s, e) { return s + e.amount; }, 0);
+      html += '<div class="chart-bar-wrap"><div class="chart-value">' + U.fmtMoney(t) + '</div><div class="chart-bar" style="height:' + Math.max(8, (t / maxSite) * 100) + 'px;background:' + (sites[i].type === 'office' ? '#FF9800' : '#2196F3') + '"></div><div class="chart-label">' + (sites[i].name.length > 15 ? sites[i].name.substring(0, 15) + '...' : sites[i].name) + '</div></div>';
+    }
+    html += '</div></div><div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Site</th><th>Type</th><th class="text-center">Count</th><th class="text-right">Month</th><th class="text-right">All Time</th><th class="text-center">%</th></tr></thead><tbody>';
+    for (var i = 0; i < sites.length; i++) {
+      var s = sites[i];
+      var mExp = monthExp.filter(function (e) { return e.siteId == s.id; });
+      var aExp = DB.d.expenses.filter(function (e) { return e.siteId == s.id; });
+      var mT = mExp.reduce(function (s2, e) { return s2 + e.amount; }, 0);
+      var aT = aExp.reduce(function (s2, e) { return s2 + e.amount; }, 0);
+      html += '<tr><td><strong>' + s.name + '</strong></td><td>' + (s.type === 'office' ? '<span class="badge badge-office">Office</span>' : '<span class="badge badge-site">Site</span>') + '</td>';
+      html += '<td class="text-center">' + aExp.length + '</td><td class="text-right">' + U.fmtMoney(mT) + '</td>';
+      html += '<td class="text-right"><strong>' + U.fmtMoney(aT) + '</strong></td>';
+      html += '<td class="text-center"><span class="badge badge-primary">' + (allTotal ? Math.round(aT / allTotal * 100) : 0) + '%</span></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  attReport: function () {
+    var now = new Date(); var mi = now.getMonth(), y = now.getFullYear();
+    var html = '<div class="card"><div class="card-header"><h3>Attendance - ' + U.months[mi] + ' ' + y + '</h3></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Employee</th><th class="text-center">P</th><th class="text-center">HD</th><th class="text-center">A</th><th class="text-center">PL</th><th class="text-center">WO</th><th class="text-center">Eff.D</th><th class="text-center">%</th></tr></thead><tbody>';
+    html += Attendance.monthSummary(mi, y);
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  salReport: function () {
+    var pays = DB.d.salaryPayments;
+    var tG = 0, tA = 0, tN = 0;
+    for (var i = 0; i < pays.length; i++) { tG += pays[i].grossPay; tA += (pays[i].advanceDeduction || 0); tN += pays[i].netPay; }
+    var byEmp = {};
+    for (var i = 0; i < pays.length; i++) {
+      var pid = pays[i].employeeId;
+      if (!byEmp[pid]) byEmp[pid] = { g: 0, d: 0, n: 0, c: 0 };
+      byEmp[pid].g += pays[i].grossPay;
+      byEmp[pid].d += (pays[i].advanceDeduction || 0);
+      byEmp[pid].n += pays[i].netPay;
+      byEmp[pid].c++;
+    }
+    var html = '<div class="card"><div class="card-header"><h3>Salary Report</h3></div>';
+    html += '<div class="card-body"><div class="summary-row">';
+    html += '<div class="summary-box"><div class="sum-val">' + U.fmtMoney(tG) + '</div><div class="sum-label">Gross</div></div>';
+    html += '<div class="summary-box"><div class="sum-val" style="color:#E53935">-' + U.fmtMoney(tA) + '</div><div class="sum-label">Adv. Ded</div></div>';
+    html += '<div class="summary-box"><div class="sum-val" style="color:#4CAF50">' + U.fmtMoney(tN) + '</div><div class="sum-label">Net Paid</div></div></div></div>';
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Employee</th><th class="text-center">Weeks</th><th class="text-right">Gross</th><th class="text-right">Adv.Ded</th><th class="text-right">Net</th></tr></thead><tbody>';
+    for (var pid in byEmp) {
+      var emp = U.empById(pid); if (!emp) continue;
+      var s = byEmp[pid];
+      html += '<tr><td><strong>' + emp.name + '</strong></td><td class="text-center">' + s.c + '</td>';
+      html += '<td class="text-right">' + U.fmtMoney(s.g) + '</td>';
+      html += '<td class="text-right" style="color:#E53935">' + (s.d ? '-' + U.fmtMoney(s.d) : '-') + '</td>';
+      html += '<td class="text-right"><strong style="color:#4CAF50">' + U.fmtMoney(s.n) + '</strong></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  },
+  advReport: function () {
+    var all = DB.d.advances;
+    var tG = 0, tS = 0, tP = 0;
+    for (var i = 0; i < all.length; i++) { tG += all[i].amount; tS += all[i].deductedAmount; tP += (all[i].amount - all[i].deductedAmount); }
+    var html = '<div class="card"><div class="card-header"><h3>Advance Report</h3></div>';
+    html += '<div class="card-body"><div class="summary-row">';
+    html += '<div class="summary-box"><div class="sum-val">' + U.fmtMoney(tG) + '</div><div class="sum-label">Given</div></div>';
+    html += '<div class="summary-box"><div class="sum-val" style="color:#4CAF50">' + U.fmtMoney(tS) + '</div><div class="sum-label">Settled</div></div>';
+    html += '<div class="summary-box"><div class="sum-val" style="color:#FF9800">' + U.fmtMoney(tP) + '</div><div class="sum-label">Outstanding</div></div></div></div>';
+    var byEmp = {};
+    for (var i = 0; i < all.length; i++) {
+      var pid = all[i].employeeId;
+      if (!byEmp[pid]) byEmp[pid] = { g: 0, d: 0, p: 0, c: 0 };
+      byEmp[pid].g += all[i].amount; byEmp[pid].d += all[i].deductedAmount;
+      byEmp[pid].p += (all[i].amount - all[i].deductedAmount); byEmp[pid].c++;
+    }
+    html += '<div class="card-body no-pad"><div class="table-wrap"><table><thead><tr><th>Employee</th><th class="text-center">Records</th><th class="text-right">Given</th><th class="text-right">Settled</th><th class="text-right">Outstanding</th></tr></thead><tbody>';
+    for (var pid in byEmp) {
+      var emp = U.empById(pid); if (!emp) continue;
+      var s = byEmp[pid];
+      html += '<tr><td><strong>' + emp.name + '</strong></td><td class="text-center">' + s.c + '</td>';
+      html += '<td class="text-right">' + U.fmtMoney(s.g) + '</td>';
+      html += '<td class="text-right" style="color:#4CAF50">' + U.fmtMoney(s.d) + '</td>';
+      html += '<td class="text-right"><strong style="color:' + (s.p > 0 ? '#FF9800' : '#a0aec0') + '">' + (s.p > 0 ? U.fmtMoney(s.p) : '-') + '</strong></td></tr>';
+    }
+    html += '</tbody></table></div></div></div>';
+    return html;
+  }
+};
+
+// ==================== SETTINGS (FIXED: uses = not :) ====================
+var Settings = {
+  render: function () {
+    var c = getCompany();
+    var html = companyLetterhead();
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-building"></i> Company Profile</h3><button class="btn btn-primary" onclick="Settings.saveProfile()"><i class="fas fa-save"></i> Save Profile</button></div>';
+    html += '<div class="card-body"><div class="company-logo-area">';
+    html += '<div class="logo-preview-box">' + (c.logo ? '<img src="' + c.logo + '" alt="Logo"><div class="logo-hint">Current Logo</div>' : '<div class="default-icon"><i class="fas fa-hard-hat"></i></div><div class="logo-hint">No Logo</div>') + '</div>';
+    html += '<div class="logo-controls"><div style="font-size:14px;font-weight:700;color:#0f2b46">Company Logo</div>';
+    html += '<p style="font-size:12px;color:#718096">PNG/SVG, max 500x500px</p>';
+    html += '<input type="file" id="logoFile" accept="image/*" style="display:none" onchange="Settings.handleLogo(event)">';
+    html += '<div class="logo-btns"><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'logoFile\').click()"><i class="fas fa-upload"></i> Upload Logo</button>';
+    if (c.logo) html += '<button class="btn btn-danger btn-sm" onclick="Settings.removeLogo()"><i class="fas fa-trash"></i> Remove</button>';
+    html += '</div></div></div>';
+    html += '<div class="settings-grid">';
+    html += '<div class="form-group"><label>Company Name *</label><input id="setCompany" value="' + (c.name || '') + '"></div>';
+    html += '<div class="form-group"><label>Tagline</label><input id="setTagline" value="' + (c.tagline || '') + '"></div>';
+    html += '<div class="form-group"><label>Address</label><textarea id="setAddress">' + (c.address || '') + '</textarea></div>';
+    html += '<div class="form-group"><label>Phone</label><input id="setPhone" value="' + (c.phone || '') + '"></div>';
+    html += '<div class="form-group"><label>Email</label><input id="setEmail" value="' + (c.email || '') + '" type="email"></div>';
+    html += '<div class="form-group"><label>GST Number</label><input id="setGst" value="' + (c.gst || '') + '"></div>';
+    html += '<div class="form-group"><label>Website</label><input id="setWebsite" value="' + (c.website || '') + '"></div>';
+    html += '</div></div>';
+    html += '<div class="card-footer"><button class="btn btn-primary" onclick="Settings.saveProfile()"><i class="fas fa-save"></i> Save Profile</button></div></div>';
+    // Data export/import
+    html += '<div class="card"><div class="card-header"><h3><i class="fas fa-database"></i> Data Export & Import</h3></div><div class="card-body"><div class="data-action-cards">';
+    html += '<div class="data-action-card" onclick="ExcelExporter.export()" style="border-color:#4CAF50"><i class="fas fa-file-excel" style="color:#4CAF50"></i><h4>Export Excel</h4><p>Multi-sheet .xlsx</p></div>';
+    html += '<div class="data-action-card" onclick="App.exportJSON()" style="border-color:#2196F3"><i class="fas fa-database" style="color:#2196F3"></i><h4>Export JSON</h4><p>Full backup</p></div>';
+    html += '<div class="data-action-card" onclick="document.getElementById(\'importFile\').click()" style="border-color:#FF9800"><i class="fas fa-file-import" style="color:#FF9800"></i><h4>Import JSON</h4><p>Restore backup</p></div>';
+    html += '</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="Settings.importData(event)"><div id="importPreview"></div></div></div>';
+    // Danger zone
+    html += '<div class="danger-zone"><h4><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>';
+    html += '<p style="font-size:13px;color:#718096">Reset data to defaults. Export a backup first.</p>';
+    html += '<div class="btns"><button class="btn btn-warning" onclick="Settings.resetDemo()"><i class="fas fa-rotate-left"></i> Restore Demo</button>';
+    html += '<button class="btn btn-danger" onclick="Settings.clearAll()"><i class="fas fa-trash"></i> Clear All</button></div></div>';
+    return html;
+  },
+  bind: function () {},
+  handleLogo: function (event) {
+    var file = event.target.files[0]; if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { UIC.toast('Image too large! Max 5MB.', 'error'); return; }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        var maxW = 300, maxH = 300, w = img.width, h = img.height;
+        if (w > maxW) { h = h * (maxW / w); w = maxW; }
+        if (h > maxH) { w = w * (maxH / h); h = maxH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        DB.d.company.logo = canvas.toDataURL('image/png', 0.8);
+        DB.save(); App.switch('settings'); updateSidebarCompany(); UIC.toast('Logo uploaded!');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  },
+  removeLogo: function () { DB.d.company.logo = ''; DB.save(); App.switch('settings'); updateSidebarCompany(); UIC.toast('Logo removed.', 'info'); },
+  saveProfile: function () {
+    var name = document.getElementById('setCompany').value.trim();
+    if (!name) { UIC.toast('Company name required!', 'error'); return; }
+    DB.d.company.name = name;
+    DB.d.company.tagline = document.getElementById('setTagline').value.trim();
+    DB.d.company.address = document.getElementById('setAddress').value.trim();
+    DB.d.company.phone = document.getElementById('setPhone').value.trim();
+    DB.d.company.email = document.getElementById('setEmail').value.trim();
+    DB.d.company.gst = document.getElementById('setGst').value.trim();
+    DB.d.company.website = document.getElementById('setWebsite').value.trim();
+    DB.save(); updateSidebarCompany(); UIC.toast('Profile saved!');
+  },
+  importData: function (event) {
+    var file = event.target.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (!data.employees || !data.counters) { UIC.toast('Invalid backup format!', 'error'); return; }
+        var html = '<div class="import-preview"><strong>Backup Loaded</strong><br>';
+        html += 'Company: <strong>' + (data.company ? data.company.name : 'N/A') + '</strong> | ';
+        html += 'Employees: <strong>' + data.employees.length + '</strong> | ';
+        html += 'Sites: <strong>' + ((data.sites || []).length) + '</strong> | ';
+        html += 'Expenses: <strong>' + ((data.expenses || []).length) + '</strong><br>';
+        html += '<button class="btn btn-success btn-sm" style="margin-top:8px" onclick="Settings.confirmImport()"><i class="fas fa-check"></i> Confirm Import</button></div>';
+        document.getElementById('importPreview').innerHTML = html;
+        Settings._importData = data;
+      } catch (err) { UIC.toast('Failed to parse JSON!', 'error'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  },
+  confirmImport: function () {
+    if (!this._importData) return;
+    UIC.confirmDefault('Replace ALL data with imported backup?').then(function (ok) {
+      if (ok) {
+        var company = DB.d.company;
+        DB.d = Settings._importData;
+        if (!DB.d.company) DB.d.company = company;
+        if (!DB.d.sites) DB.d.sites = [];
+        if (!DB.d.counters.site) DB.d.counters.site = 0;
+        DB.save(); updateSidebarCompany(); UIC.toast('Data imported!');
+        App.switch('settings'); Settings._importData = null;
+      }
+    });
+  },
+  resetDemo: function () {
+    UIC.confirm('Replace ALL data with demo seed? Company profile kept.').then(function (ok) {
+      if (ok) {
+        DB.d = { company: DB.d.company, sites: [], employees: [], attendance: {}, expenses: [], salaryPayments: [], advances: [], counters: { emp: 0, exp: 0, sal: 0, adv: 0, site: 0 } };
+        DB.seed(true); updateSidebarCompany(); UIC.toast('Demo data restored!'); App.switch('dashboard');
+      }
+    });
+  },
+  clearAll: function () {
+    UIC.confirm('DELETE ALL data? Company profile kept. CANNOT be undone!').then(function (ok) {
+      if (ok) {
+        DB.d = { company: DB.d.company, sites: [], employees: [], attendance: {}, expenses: [], salaryPayments: [], advances: [], counters: { emp: 0, exp: 0, sal: 0, adv: 0, site: 0 } };
+        DB.save(); updateSidebarCompany(); UIC.toast('All data cleared!', 'warning'); App.switch('dashboard');
+      }
+    });
+  }
+};
+
+// ==================== EXCEL EXPORTER (FIXED: uses = not :) ====================
+var ExcelExporter = {
+  export: function () {
+    if (typeof XLSX === 'undefined') { UIC.toast('Excel library not loaded!', 'error'); return; }
+    try {
+      var c = getCompany(); var today = U.today(); var wb = XLSX.utils.book_new();
+
+      // Sheet 1: Company Info
+      var coRows = [];
+      coRows.push([c.name.toUpperCase()]);
+      coRows.push(['']);
+      coRows.push(['COMPANY INFORMATION']);
+      coRows.push(['']);
+      coRows.push(['Field', 'Value']);
+      coRows.push(['']);
+      coRows.push(['Company Name', c.name || '']);
+      coRows.push(['Tagline', c.tagline || 'N/A']);
+      coRows.push(['Address', (c.address || 'N/A').replace(/\n/g, ', ')]);
+      coRows.push(['Phone', c.phone || 'N/A']);
+      coRows.push(['Email', c.email || 'N/A']);
+      coRows.push(['GST Number', c.gst || 'N/A']);
+      coRows.push(['Website', c.website || 'N/A']);
+      coRows.push(['']);
+      coRows.push(['SITES & LOCATIONS']);
+      coRows.push(['']);
+      coRows.push(['Site ID', 'Name', 'Type', 'Status']);
+      for (var si = 0; si < DB.d.sites.length; si++) {
+        coRows.push([DB.d.sites[si].id, DB.d.sites[si].name, DB.d.sites[si].type === 'office' ? 'Office' : 'Work Site', DB.d.sites[si].active ? 'Active' : 'Inactive']);
+      }
+      coRows.push(['']);
+      coRows.push(['EXPORT SUMMARY']);
+      coRows.push(['']);
+      coRows.push(['Field', 'Count']);
+      coRows.push(['Export Date', U.fmtDate(today)]);
+      coRows.push(['Total Sites', DB.d.sites.length]);
+      coRows.push(['Total Employees', DB.d.employees.length]);
+      coRows.push(['Total Expenses', DB.d.expenses.length]);
+      coRows.push(['Total Salary Payments', DB.d.salaryPayments.length]);
+      coRows.push(['Total Advances', DB.d.advances.length]);
+      coRows.push(['Attendance Days', Object.keys(DB.d.attendance).length]);
+      var ws1 = XLSX.utils.aoa_to_sheet(coRows);
+      ws1['!cols'] = [{ wch: 25 }, { wch: 45 }, { wch: 15 }, { wch: 12 }];
+      XLSX.utils.book_append_sheet(wb, ws1, 'Company Info');
+
+      // Sheet 2: Employees
+      var empRows = [];
+      empRows.push([c.name + ' - Employee Register']);
+      empRows.push(['']);
+      empRows.push(['Sr No', 'ID', 'Name', 'Designation', 'Phone', 'Join Date', 'Type', 'Weekly Salary', 'Daily Wage', 'Status']);
+      var tw = 0, td = 0;
+      for (var i = 0; i < DB.d.employees.length; i++) {
+        var e = DB.d.employees[i];
+        tw += (e.weeklySalary || 0); td += (e.dailyWage || 0);
+        empRows.push([i + 1, e.id, e.name, e.designation, e.phone, U.fmtDate(e.joinDate), e.salaryType === 'weekly' ? 'Weekly' : 'Daily', e.weeklySalary || 0, e.dailyWage || 0, e.active ? 'Active' : 'Inactive']);
+      }
+      if (DB.d.employees.length > 0) empRows.push(['', '', '', '', '', '', 'TOTAL', tw, td, '']);
+      var ws2 = XLSX.utils.aoa_to_sheet(empRows);
+      ws2['!cols'] = [{ wch: 6 }, { wch: 6 }, { wch: 22 }, { wch: 18 }, { wch: 15 }, { wch: 14 }, { wch: 10 }, { wch: 14 }, { wch: 12 }, { wch: 10 }];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Employees');
+
+      // Sheet 3: Attendance
+      var now = new Date(); var mi = now.getMonth(), yr = now.getFullYear();
+      var daysM = new Date(yr, mi + 1, 0).getDate();
+      var attRows = [];
+      attRows.push([c.name + ' - Attendance (' + U.months[mi] + ' ' + yr + ')']);
+      attRows.push(['']);
+      attRows.push(['Employee', 'Present', 'Half Day', 'Absent', 'Leave', 'W/O', 'Eff Days', '%']);
+      var emps = U.activeEmps();
+      for (var i = 0; i < emps.length; i++) {
+        var emp = emps[i];
+        var p = 0, hd = 0, a = 0, pl = 0, wo = 0;
+        for (var d = 1; d <= daysM; d++) {
+          var ds = yr + '-' + String(mi + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          if (U.isSunday(ds)) { wo++; continue; }
+          var st = (DB.d.attendance[ds] || {})[emp.id];
+          if (st === 'present') p++; else if (st === 'half-day') hd++; else if (st === 'absent') a++; else if (st === 'paid-leave') pl++; else if (st === 'weekly-off') wo++;
+        }
+        var eff = p + hd * 0.5 + pl;
+        var pct = Math.round(eff / (U.daysInWeek() * Math.ceil(daysM / 7)) * 100) || 0;
+        attRows.push([emp.name, p, hd, a, pl, wo, eff, pct + '%']);
+      }
+      var ws3 = XLSX.utils.aoa_to_sheet(attRows);
+      ws3['!cols'] = [{ wch: 22 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }];
+      XLSX.utils.book_append_sheet(wb, ws3, 'Attendance');
+
+      // Sheet 4: Expenses
+      var expRows = [];
+      expRows.push([c.name + ' - Expense Register']);
+      expRows.push(['']);
+      expRows.push(['Sr No', 'Date', 'Site', 'Category', 'Description', 'Method', 'Paid By', 'Receipt', 'Amount']);
+      var sortedExp = DB.d.expenses.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+      var expTotal = 0;
+      for (var i = 0; i < sortedExp.length; i++) {
+        expTotal += sortedExp[i].amount;
+        expRows.push([i + 1, U.fmtDate(sortedExp[i].date), U.siteName(sortedExp[i].siteId), U.catLabel(sortedExp[i].category), sortedExp[i].description, U.payLabel(sortedExp[i].paymentMethod), sortedExp[i].paidBy, sortedExp[i].receiptNo || '', sortedExp[i].amount]);
+      }
+      if (sortedExp.length > 0) expRows.push(['', '', '', '', '', '', '', 'TOTAL', expTotal]);
+      var ws4 = XLSX.utils.aoa_to_sheet(expRows);
+      ws4['!cols'] = [{ wch: 6 }, { wch: 14 }, { wch: 24 }, { wch: 18 }, { wch: 35 }, { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws4, 'Expenses');
+
+      // Sheet 5: Salary Payments
+      var salRows = [];
+      salRows.push([c.name + ' - Salary Payments']);
+      salRows.push(['']);
+      salRows.push(['Sr No', 'Employee', 'Week Start', 'Week End', 'Days', 'Gross', 'Adv Ded', 'Net Paid', 'Date']);
+      var tG = 0, tA = 0, tN = 0;
+      for (var i = 0; i < DB.d.salaryPayments.length; i++) {
+        var p = DB.d.salaryPayments[i];
+        tG += p.grossPay; tA += (p.advanceDeduction || 0); tN += p.netPay;
+        salRows.push([i + 1, U.empName(p.employeeId), U.fmtDate(p.weekStart), U.fmtDate(p.weekEnd), p.daysWorked, p.grossPay, p.advanceDeduction || 0, p.netPay, U.fmtDate(p.paymentDate)]);
+      }
+      if (DB.d.salaryPayments.length > 0) salRows.push(['', '', '', '', 'TOTAL', tG, tA, tN, '']);
+      var ws5 = XLSX.utils.aoa_to_sheet(salRows);
+      ws5['!cols'] = [{ wch: 6 }, { wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws5, 'Salary Payments');
+
+      // Sheet 6: Advances
+      var advRows = [];
+      advRows.push([c.name + ' - Advance Register']);
+      advRows.push(['']);
+      advRows.push(['Sr No', 'Date', 'Day', 'Employee', 'Amount', 'Deducted', 'Remaining', 'Reason', 'Status']);
+      var sAdv = DB.d.advances.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+      var ag = 0, ad = 0, ar = 0;
+      for (var i = 0; i < sAdv.length; i++) {
+        var adv = sAdv[i];
+        var rem = adv.amount - adv.deductedAmount;
+        ag += adv.amount; ad += adv.deductedAmount; ar += rem;
+        var st = adv.status === 'adjusted' ? 'Settled' : adv.deductedAmount > 0 ? 'Partial' : 'Pending';
+        advRows.push([i + 1, U.fmtDate(adv.date), U.dayName(adv.date), U.empName(adv.employeeId), adv.amount, adv.deductedAmount, rem, adv.reason || '', st]);
+      }
+      if (sAdv.length > 0) advRows.push(['', '', '', 'TOTAL', ag, ad, ar, '', '']);
+      var ws6 = XLSX.utils.aoa_to_sheet(advRows);
+      ws6['!cols'] = [{ wch: 6 }, { wch: 14 }, { wch: 10 }, { wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 22 }, { wch: 12 }];
+      XLSX.utils.book_append_sheet(wb, ws6, 'Advances');
+
+      var filename = (c.name || 'Company').replace(/[^a-zA-Z0-9]/g, '_') + '_Export_' + today + '.xlsx';
+      XLSX.writeFile(wb, filename);
+      UIC.toast('Excel exported! ' + filename, 'success');
+    } catch (err) {
+      console.error('Export error:', err);
+      UIC.toast('Export failed: ' + err.message, 'error');
+    }
+  }
+};
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', function () { App.init(); });
+</script>
+</body>
+</html>
